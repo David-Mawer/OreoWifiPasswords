@@ -5,7 +5,7 @@
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.gmail.ndrdevelop.wifipasswords.activities.MainActivity">
+    tools:context="com.pithsoftware.wifipasswords.activities.MainActivity">
 
 
     <android.support.design.widget.AppBarLayout
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_behavior="com.gmail.ndrdevelop.wifipasswords.extras.FlingBehavior">
+        app:layout_behavior="com.pithsoftware.wifipasswords.extras.FlingBehavior">
 
         <include
             android:id="@+id/app_bar"
@@ -31,7 +31,7 @@
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         style="@style/floating_action_button"
-        app:layout_behavior="com.gmail.ndrdevelop.wifipasswords.extras.ScrollAwareFABBehavior"
+        app:layout_behavior="com.pithsoftware.wifipasswords.extras.ScrollAwareFABBehavior"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

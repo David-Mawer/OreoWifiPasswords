@@ -251,8 +251,8 @@
 
     <string name="dialog_about_key" translateable="false">dialog_about</string>
     <string name="dialog_about_title">Help &amp; Feedback</string>
-    <string name="dialog_about_info">Wifi Passwords by Nexxado - <a href="mailto:ndrdevelop@gmail.com">Send Feedback</a></string>
-    <string name="dialog_about_github"><a href="https://github.com/Nexxado/WifiPasswords">GitHub Repo</a></string>
+    <string name="dialog_about_info">Wifi Passwords by Nexxado (+Oreo by David Mawer) - <a href="mailto:david@pithsoftware.com">Send Feedback</a></string>
+    <string name="dialog_about_github"><a href="https://github.com/David-Mawer/WifiPasswords">GitHub Repo</a></string>
     <string name="dialog_about_version">Version:</string>
     <string name="dialog_about_version_error">Version: ###</string>
     <string name="dialog_about_libraries_title"><u>External Libraries Used:</u></string>
