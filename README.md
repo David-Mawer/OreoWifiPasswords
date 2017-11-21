@@ -1,6 +1,8 @@
-# WifiPasswords
+# OreoWifiPasswords
 
-this is my first Android Project.
+This was Nexxado's first project (see <a href="https://github.com/Nexxado/WifiPasswords">Nexxado's GitHub branch</a>)
+
+I adopted it and extended it (as my first android project) to get it working on Android Oreo.
 
 #### a completely free app that shows your device saved wifi passwords.
 
@@ -8,11 +10,6 @@ this is my first Android Project.
 Warning: sharing a wifi password with someone can compromise that wifi network security!
 
 <a href="#troubleshooting">Troubleshooting</a>
-
-<a href="https://play.google.com/store/apps/details?id=com.pithsoftware.wifipasswords" target="_blank">
-  <img alt="Get it on Google Play"
-       src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
-</a>
 
 ## Features:
 - Show your device saved wifi passwords (<u><b>ROOT REQUIRED</b></u>) 
@@ -26,9 +23,6 @@ Warning: sharing a wifi password with someone can compromise that wifi network s
 - Double-Tap to quickly copy a wifi password to clipboard
 - Long Press to bring up the Contextual Action Bar, allowing you to tag, share, copy or archive your wifi passwords.
 </br>you can then select multiple wifi passwords by simply tapping them
-
-#### ToDo List:
-- Add import\export capabilities
 
 ### External Libraries Used:
 
@@ -56,7 +50,7 @@ the most commonly used paths by manufacturers which the app automatically tries 
 - /data/misc/wifi/wpa.conf
 
 
-<a href="#wifipasswords">Back to Top</a>
+<a href="#OreoWifiPasswords">Back to Top</a>
 
 ## License
 
@@ -77,4 +71,4 @@ limitations under the License.
 
 </br>
 ***
-<a href="#wifipasswords">Back to Top</a>
+<a href="#OreoWifiPasswords">Back to Top</a>

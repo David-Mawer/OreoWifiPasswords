@@ -202,7 +202,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     public void onResume() {
         super.onResume();
 
-        RateItDialogFragment.show(getActivity(), getFragmentManager());
+//        RateItDialogFragment.show(getActivity(), getFragmentManager());
         AutoUpdateList.update(getActivity(), getFragmentManager());
     }
 
