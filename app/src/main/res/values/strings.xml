@@ -9,7 +9,6 @@
     <!--*****************-->
     <string name="app_name">Oreo Wifi Passwords</string>
     <string name="activity_title_settings">Settings</string>
-    <string name="activity_title_hidden_wifi">Hidden Passwords</string>
     <string name="activity_title_intro">Intro</string>
     <string name="activity_title_passcode">Passcode</string>
 
@@ -43,9 +42,6 @@
     <string name="snackbar_dismiss">Dismiss</string>
     <string name="snackbar_undo">Undo</string>
     <string name="snackbar_load_from_file">Updating list</string>
-    <string name="snackbar_wifi_archive">Wifi Password is now hidden</string>
-    <string name="snackbar_wifi_archive_multiple">Wifi Passwords are now hidden</string>
-    <string name="snackbar_wifi_restore">Wifi Password no longer hidden</string>
     <string name="snackbar_wifi_exists">Wifi Password already exists!</string>
     <string name="snackbar_wifi_entries_inserted">new Wifi Passwords</string>
     <string name="snackbar_wifi_entries_inserted_none">No new Wifi Passwords</string>
@@ -54,7 +50,6 @@
     <string name="snackbar_move_to_top">Wifi Passwords moved to top</string>
 
     <string name="toast_cab_double_tap">Tap once to select</string>
-    <string name="toast_crashlytics_opt_out">Requires app restart to take effect</string>
 
     <!--**********************-->
     <!-- Content Descriptions -->
@@ -69,7 +64,6 @@
     <!--**************-->
     <!-- Toolbar Menu -->
     <!--**************-->
-    <string name="action_archive">Hidden Passwords</string>
     <string name="action_settings">Settings</string>
     <string name="action_add_from_file">Update List</string>
     <string name="action_help">Help &amp; Feedback</string>
@@ -151,10 +145,6 @@
         <item>7</item>
     </string-array>
 
-
-    <string name="pref_crashlytics_optout_key" translateable="false">crashlytics_optout</string>
-    <string name="pref_crashlytics_optout_title">Disable anonymous crash reports</string>
-    <string name="pref_crashlytics_optout_summary">Sending crash reports help diagnose &amp; fix problems with the app, no private data is collected</string>
 
     <!--**********************-->
     <!-- Passcode Preferences -->

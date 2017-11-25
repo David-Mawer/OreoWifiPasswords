@@ -36,8 +36,6 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.pithsoftware.wifipasswords.R;
 import com.pithsoftware.wifipasswords.activities.IntroActivity;
 import com.pithsoftware.wifipasswords.activities.MainActivity;
@@ -47,7 +45,6 @@ import com.pithsoftware.wifipasswords.dialogs.CustomAlertDialogFragment;
 import com.pithsoftware.wifipasswords.dialogs.CustomAlertDialogListener;
 import com.pithsoftware.wifipasswords.dialogs.InputDialogFragment;
 import com.pithsoftware.wifipasswords.dialogs.InputDialogListener;
-import com.pithsoftware.wifipasswords.dialogs.RateItDialogFragment;
 import com.pithsoftware.wifipasswords.extras.AutoUpdateList;
 import com.pithsoftware.wifipasswords.extras.MyApplication;
 import com.pithsoftware.wifipasswords.extras.RequestCodes;
@@ -71,7 +68,6 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
         ItemDragListener {
 
     static final String COPIED_WIFI_ENTRY = "copied_wifi_entry"; //Clipboard Label
-    static final String STATE_RESTORED_ENTRIES = "state_restored_entries"; //HiddenActivityWifi intent.extra key
     static final String ROOT_ACCESS = "root_access";
 
     //onSavedInstance Keys
@@ -85,8 +81,10 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     boolean mSortModeEnabled = false;
 
     //Layout
-    @Bind(R.id.fragment_main_container) FrameLayout mRoot;
-    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
+    @Bind(R.id.fragment_main_container)
+    FrameLayout mRoot;
+    @Bind(R.id.progress_bar)
+    ProgressBar mProgressBar;
     FloatingActionButton mFAB;
 
     //wpa_supplicant file
@@ -95,7 +93,8 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     boolean mCurrentlyLoading = false;
 
     //RecyclerView
-    @Bind(R.id.main_wifi_list_recycler) RecyclerView mRecyclerView;
+    @Bind(R.id.main_wifi_list_recycler)
+    RecyclerView mRecyclerView;
     WifiListAdapter mAdapter;
     RecyclerView.OnItemTouchListener mRecyclerTouchListener;
     ItemTouchHelper mItemTouchHelper;
@@ -353,22 +352,6 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
                 break;
 
 
-            case RequestCodes.ACTIVITY_ARCHIVE_CODE: //Handle ArchiveActivity items restored
-
-                if (resultCode == Activity.RESULT_OK) {
-
-                    if (data != null) {
-
-                        ArrayList<WifiEntry> itemsRestored = data.getParcelableArrayListExtra(STATE_RESTORED_ENTRIES);
-                        for (int i = 0; i < itemsRestored.size(); i++) {
-                            WifiEntry entry = itemsRestored.get(i);
-                            mAdapter.addItem(i, entry);
-                        }
-                        mRecyclerView.scrollToPosition(0);
-                    }
-                }
-                break;
-
             case RequestCodes.DIALOG_PATH_ERROR_CODE:  //Handle Path Error Dialog
 
                 //Hide Progress Bar
@@ -463,18 +446,19 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     //Share wifi list
     private void shareWifiList(ArrayList<WifiEntry> listWifi) {
 
-        String textToShare = "";
+        StringBuilder textToShare = new StringBuilder();
 
         for (int i = 0; i < listWifi.size(); i++) {
 
             WifiEntry current = listWifi.get(i);
-            textToShare += "Wifi Name: " + current.getTitle() + "\n"
-                    + "Password: " + current.getPassword() + "\n\n";
+            textToShare
+                    .append("Wifi Name: ").append(current.getTitle()).append("\n")
+                    .append("Password: ").append(current.getPassword()).append("\n\n");
         }
 
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, textToShare);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, textToShare.toString());
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
 
@@ -550,7 +534,6 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
 
     public void hideFAB(boolean hide) {
-
 
 
         if (hide) {
@@ -763,42 +746,6 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
                         mode.finish();
                         return true;
 
-                    case R.id.menu_context_archive:
-                        mAnimateChanges = true;
-
-                        for (int i = selectedItems.size() - 1; i >= 0; i--) {
-                            //Starting removal from end of list so Indexes wont change when item is removed
-                            mAdapter.removeItem(selectedItems.get(i));
-                        }
-
-                        final PasswordDB db = MyApplication.getWritableDatabase();
-                        db.insertWifiEntries(selectedEntries, true, true);
-
-                        mode.finish();
-
-                        if (selectedItems.size() > 0) {
-                            String snackbarMessage;
-
-                            if (selectedItems.size() > 1) {
-                                snackbarMessage = selectedItems.size() + " " + getString(R.string.snackbar_wifi_archive_multiple);
-                            } else {
-                                snackbarMessage = getString(R.string.snackbar_wifi_archive);
-                            }
-
-                            Snackbar.make(mRoot, snackbarMessage, Snackbar.LENGTH_LONG)
-                                    .setAction(R.string.snackbar_undo, v -> {
-
-                                        for (int i = 0; i < selectedItems.size(); i++) {
-                                            mAdapter.addItem(selectedItems.get(i), selectedEntries.get(i));
-
-                                        }
-                                        db.deleteWifiEntries(selectedEntries, true);
-                                    })
-                                    .show();
-                        }
-                        MyApplication.closeDatabase();
-                        return true;
-
                     case R.id.menu_context_copy:
                         String textToCopy = "";
 
@@ -919,7 +866,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
     private void showAddWifiDialog() {
 
-        if(getActivity() == null || !isAdded())
+        if (getActivity() == null || !isAdded())
             return;
 
         InputDialogFragment fragment = InputDialogFragment
@@ -932,7 +879,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     @Override
     public void onSubmitTagDialog(String tag, ArrayList<WifiEntry> listWifi, ArrayList<Integer> positions) {
 
-        if(getActivity() == null || !isAdded())
+        if (getActivity() == null || !isAdded())
             return;
 
         for (int i = 0; i < positions.size(); i++) {
@@ -949,7 +896,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
     private void showShareDialog(final ArrayList<WifiEntry> listWifi) {
 
-        if(getActivity() == null || !isAdded())
+        if (getActivity() == null || !isAdded())
             return;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -997,17 +944,10 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     @Override
     public void showPathErrorDialog() {
 
-        if(getActivity() == null || !isAdded()) {
+        if (getActivity() == null || !isAdded()) {
             Toast.makeText(MyApplication.getAppContext(), R.string.dialog_error_path_message, Toast.LENGTH_SHORT).show();
             return;
         }
-
-        Answers.getInstance().logCustom(new CustomEvent("PathError")
-                .putCustomAttribute("device", Build.DEVICE)
-                .putCustomAttribute("model", Build.MODEL)
-                .putCustomAttribute("manufacturer", Build.MANUFACTURER)
-                .putCustomAttribute("id", "99"));
-
 
         String title = getString(R.string.dialog_error_path_title);
         String message = getString(R.string.dialog_error_path_message);
@@ -1020,10 +960,9 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     }
 
 
-
     public void showRootErrorDialog() {
 
-        if(getActivity() == null || !isAdded()) {
+        if (getActivity() == null || !isAdded()) {
             Toast.makeText(MyApplication.getAppContext(), R.string.dialog_error_root_title, Toast.LENGTH_SHORT).show();
             return;
         }

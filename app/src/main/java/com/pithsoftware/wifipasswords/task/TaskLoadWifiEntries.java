@@ -135,6 +135,10 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
             if (tagName.equals("Network")) {
                 WifiEntry newWifi = readNetworkEntry(parser);
                 if (newWifi.getTitle().length() != 0) {
+                    String passwordStr = newWifi.getPassword().trim();
+                    if (passwordStr.equals("")) {
+                        newWifi.setPassword(MyApplication.NO_PASSWORD_TEXT);
+                    }
                     result.add(newWifi);
                 }
             } else {

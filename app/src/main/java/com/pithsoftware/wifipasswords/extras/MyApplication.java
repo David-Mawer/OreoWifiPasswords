@@ -3,18 +3,14 @@ package com.pithsoftware.wifipasswords.extras;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.preference.CheckBoxPreference;
 import android.preference.PreferenceManager;
 
-import com.crashlytics.android.Crashlytics;
 import com.pithsoftware.wifipasswords.R;
 import com.pithsoftware.wifipasswords.database.PasswordDB;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import io.fabric.sdk.android.Fabric;
 
 public class MyApplication extends Application {
 
@@ -55,11 +51,6 @@ public class MyApplication extends Application {
 
 
         //Check user opt-out of Crashlytics before initializing it
-        if(!sharedPreferences.getBoolean(getString(R.string.pref_crashlytics_optout_key), false)) {
-            Fabric.with(this, new Crashlytics());
-            logUser();
-        }
-
         mPasscodeActivated = sharedPreferences.getBoolean(PASSCODE_STATE, false);
         mAppWentBackground = true;
         sShouldAutoUpdateList = !mPasscodeActivated;
@@ -67,10 +58,6 @@ public class MyApplication extends Application {
         sIsDark = sharedPreferences.getBoolean(getString(R.string.pref_dark_theme_key), false);
     }
 
-
-    public static MyApplication getInstance() {
-        return sInstance;
-    }
 
     public static Context getAppContext() {
         return sInstance.getApplicationContext();
@@ -100,13 +87,6 @@ public class MyApplication extends Application {
         sMyUUID = UUID.randomUUID().toString();
         PreferenceManager.getDefaultSharedPreferences(this).edit().putString(DEVICE_UUID, sMyUUID).apply();
 
-    }
-
-    private void logUser() {
-
-        Crashlytics.setUserIdentifier(sMyUUID);
-        Crashlytics.setUserName(Build.DEVICE);
-        Crashlytics.setUserEmail(Build.MODEL);
     }
 
 }

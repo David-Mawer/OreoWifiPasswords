@@ -141,11 +141,6 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
 
-            case R.id.action_hidden_list:
-                compat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, null);
-                startActivityForResult(new Intent(this, ArchiveActivity.class), RequestCodes.ACTIVITY_ARCHIVE_CODE, compat.toBundle());
-                return true;
-
             case R.id.action_settings:
                 //Start Settings with Transition
                 compat = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.right_in, R.anim.left_out);

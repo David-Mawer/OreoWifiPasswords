@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
-    <item
-        android:id="@+id/action_hidden_list"
-        android:orderInCategory="200"
-        android:title="@string/action_archive"
-        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/action_hidden_list"-->
+        <!--android:orderInCategory="200"-->
+        <!--android:title="@string/action_archive"-->
+        <!--app:showAsAction="never" />-->
 
     <item
         android:id="@+id/action_settings"

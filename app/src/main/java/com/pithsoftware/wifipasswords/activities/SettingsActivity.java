@@ -2,7 +2,6 @@ package com.pithsoftware.wifipasswords.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -17,8 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.pithsoftware.wifipasswords.R;
 import com.pithsoftware.wifipasswords.dialogs.AboutDialogFragment;
 import com.pithsoftware.wifipasswords.extras.AppCompatPreferenceActivity;
@@ -166,37 +163,31 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         private Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener
                 = (preference, newValue) -> {
 
-                    getActivity().setResult(RESULT_OK);
+            getActivity().setResult(RESULT_OK);
 
-                    String stringValue = newValue.toString();
+            String stringValue = newValue.toString();
 
-                    if (preference instanceof EditTextPreference) {
+            if (preference instanceof EditTextPreference) {
 
-                        preference.setSummary(stringValue);
+                preference.setSummary(stringValue);
 
-                        Answers.getInstance().logCustom(new CustomEvent("Manual Path")
-                                .putCustomAttribute("device", Build.DEVICE)
-                                .putCustomAttribute("model", Build.MODEL)
-                                .putCustomAttribute("manufacturer", Build.MANUFACTURER)
-                                .putCustomAttribute("path", stringValue));
+            } else if (preference instanceof ListPreference) {
 
-                    } else if (preference instanceof ListPreference) {
+                int index = ((ListPreference) preference).findIndexOfValue(stringValue);
+                String summary = "";
 
-                        int index = ((ListPreference) preference).findIndexOfValue(stringValue);
-                        String summary = "";
+                if (preference.getKey().equals(getString(R.string.pref_auto_update_key))) {
+                    String disabled = getResources().getStringArray(R.array.pref_auto_update_list_values)[0];
+                    if (!stringValue.equals(disabled))
+                        summary += getString(R.string.pref_auto_update_summary) + " - ";
+                }
 
-                        if(preference.getKey().equals(getString(R.string.pref_auto_update_key))) {
-                            String disabled = getResources().getStringArray(R.array.pref_auto_update_list_values)[0];
-                            if(!stringValue.equals(disabled))
-                                summary += getString(R.string.pref_auto_update_summary) + " - ";
-                        }
+                summary += ((ListPreference) preference).getEntries()[index];
+                preference.setSummary(summary);
+            }
 
-                        summary += ((ListPreference) preference).getEntries()[index];
-                        preference.setSummary(summary);
-                    }
-
-                    return true;
-                };
+            return true;
+        };
 
         private void bindPreferenceSummaryToValue(Preference preference) {
             // Set the listener to watch for value changes.
@@ -209,7 +200,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             .getDefaultSharedPreferences(preference.getContext())
                             .getString(preference.getKey(), ""));
         }
-
 
 
         @Override
@@ -268,14 +258,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             });
 
             findPreference(getString(R.string.pref_dark_theme_key)).setOnPreferenceClickListener(preference -> {
-                MyApplication.darkTheme((CheckBoxPreference)preference);
+                MyApplication.darkTheme((CheckBoxPreference) preference);
                 getActivity().setResult(RequestCodes.DARK_THEME);
                 getActivity().finish();
-                return true;
-            });
-
-            findPreference(getString(R.string.pref_crashlytics_optout_key)).setOnPreferenceClickListener(preference -> {
-                Toast.makeText(getActivity(), getString(R.string.toast_crashlytics_opt_out), Toast.LENGTH_LONG).show();
                 return true;
             });
 
