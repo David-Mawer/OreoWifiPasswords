@@ -42,7 +42,8 @@
     <string name="snackbar_dismiss">Dismiss</string>
     <string name="snackbar_undo">Undo</string>
     <string name="snackbar_load_from_file">Updating list</string>
-    <string name="snackbar_wifi_entries_inserted">Wifi Password(s)</string>
+    <string name="snackbar_wifi_entry_inserted">Wifi Password</string>
+    <string name="snackbar_wifi_entries_inserted">Wifi Passwords</string>
     <string name="snackbar_wifi_entries_inserted_none">No Wifi Passwords</string>
     <string name="snackbar_wifi_no_password_added">Wifi without passwords added</string>
     <string name="snackbar_wifi_no_password_removed">Wifi without passwords removed</string>

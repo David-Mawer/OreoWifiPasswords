@@ -238,7 +238,11 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
         String snackbarMessage;
 
         if (numOfEntries > 0) {
-            snackbarMessage = numOfEntries + " " + getString(R.string.snackbar_wifi_entries_inserted);
+            if (numOfEntries > 1) {
+                snackbarMessage = numOfEntries + " " + getString(R.string.snackbar_wifi_entries_inserted);
+            } else {
+                snackbarMessage = numOfEntries + " " + getString(R.string.snackbar_wifi_entry_inserted);
+            }
         } else {
             snackbarMessage = getString(R.string.snackbar_wifi_entries_inserted_none);
         }

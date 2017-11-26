@@ -90,12 +90,8 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
     /****************** Helper Methods ******************/
     /****************************************************/
 
-    private String markWifiIfCurrent(String wifiName, String connectedToName) {
-        String result = wifiName;
-        if (result.equals(connectedToName)) {
-            result = "* " + connectedToName;
-        }
-        return result;
+    private Boolean IsWifiConnected(String wifiName, String connectedToName) {
+        return wifiName.equals(connectedToName);
     }
 
     private String getWifiName() {
@@ -123,7 +119,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                 if ((i % 3) == 0) {
                     mDummyData.add(new WifiEntry("TestData #" + i, MyApplication.NO_PASSWORD_TEXT));
                 } else {
-                    mDummyData.add(new WifiEntry("TestData #" + i, "testPwd #" + i));
+                    mDummyData.add(new WifiEntry("TestData #" + i, "testPwd #" + i, (i == 5)));
                 }
             }
         }
@@ -149,7 +145,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
 
             if (tagName.equals("Network")) {
                 WifiEntry newWifi = readNetworkEntry(parser);
-                newWifi.setTitle(markWifiIfCurrent(newWifi.getTitle(), currentSSID));
+                newWifi.setConnectedInd(IsWifiConnected(newWifi.getTitle(), currentSSID));
                 if (newWifi.getTitle().length() != 0) {
                     String passwordStr = newWifi.getPassword().trim();
                     if (passwordStr.equals("")) {
@@ -353,8 +349,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                         password = MyApplication.NO_PASSWORD_TEXT;
                     }
 
-                    title = markWifiIfCurrent(title, currentSSID);
-                    WifiEntry current = new WifiEntry(title, password);
+                    WifiEntry current = new WifiEntry(title, password, IsWifiConnected(title, currentSSID));
                     listWifi.add(current);
 
                     title = "";

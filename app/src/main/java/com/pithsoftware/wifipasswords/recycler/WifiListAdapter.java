@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -58,6 +59,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
         WifiEntry currentEntry = mListWifi.get(position);
 
         holder.mTitle.setText(currentEntry.getTitle());
+        holder.mCurrentInd.setChecked(currentEntry.getConnectedInd());
         holder.mPassword.setText(currentEntry.getPassword());
         holder.mTagText.setText(currentEntry.getTag());
 
@@ -269,6 +271,8 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
 
         @Bind(R.id.title_wifi)
         TextView mTitle;
+        @Bind(R.id.current_wifi)
+        CheckBox mCurrentInd;
         @Bind(R.id.password_wifi)
         TextView mPassword;
         @Bind(R.id.drag_handler)
