@@ -42,9 +42,8 @@
     <string name="snackbar_dismiss">Dismiss</string>
     <string name="snackbar_undo">Undo</string>
     <string name="snackbar_load_from_file">Updating list</string>
-    <string name="snackbar_wifi_exists">Wifi Password already exists!</string>
-    <string name="snackbar_wifi_entries_inserted">new Wifi Passwords</string>
-    <string name="snackbar_wifi_entries_inserted_none">No new Wifi Passwords</string>
+    <string name="snackbar_wifi_entries_inserted">Wifi Password(s)</string>
+    <string name="snackbar_wifi_entries_inserted_none">No Wifi Passwords</string>
     <string name="snackbar_wifi_no_password_added">Wifi without passwords added</string>
     <string name="snackbar_wifi_no_password_removed">Wifi without passwords removed</string>
     <string name="snackbar_move_to_top">Wifi Passwords moved to top</string>
@@ -65,7 +64,6 @@
     <!-- Toolbar Menu -->
     <!--**************-->
     <string name="action_settings">Settings</string>
-    <string name="action_add_from_file">Update List</string>
     <string name="action_help">Help &amp; Feedback</string>
     <string name="action_share">Share</string>
     <string name="action_search">Search</string>
@@ -98,24 +96,13 @@
     <string name="pref_path_list_key" translateable="false">pref_path_list</string>
     <string name="pref_path_list_title">File Location</string>
 
-    <string name="pref_path_checkbox_key" translateable="false">pref_path_checkbox</string>
-    <string name="pref_path_checkbox_title">Enter file location manually</string>
-
-    <string name="pref_reset_manual_key" translateable="false">pref_reset_manual</string>
-    <string name="pref_reset_manual_summary">restore default path</string>
-    <string name="pref_reset_manual_title">Reset Manual Location</string>
-
     <string name="pref_default_key" translateable="false">pref_default</string>
-    <string name="pref_default_title">Reset Data</string>
-    <string name="pref_default_summary">Delete all the data and reload it from your device</string>
 
     <string-array name="wpa_supplicant_locations">
         <item>/data/misc/wifi/wpa_supplicant.conf</item>
         <item>/data/wifi/bcm_supp.conf</item>
         <item>/data/misc/wifi/wpa.conf</item>
-        <item>Manual</item>
     </string-array>
-    <string name="pref_path_list_manual">Manual</string>
 
     <string name="pref_share_warning_key" translateable="false">pref_share_warning</string>
     <string name="pref_share_warning_title_show">Show Share Warning</string>
@@ -129,57 +116,14 @@
     <string name="pref_dark_theme_title">Dark Theme</string>
     <string name="pref_dark_theme_summary">Cause the app to restart &amp; apply theme</string>
 
-    <string name="pref_auto_update_key" translateable="false">auto_update_list</string>
-    <string name="pref_auto_update_title">Auto-Update frequency</string>
-    <string name="pref_auto_update_default">1</string>
-    <string name="pref_auto_update_default_summary">Update WiFi list Once a day</string>
-    <string name="pref_auto_update_summary">Update Wifi list</string>
-    <string-array name="pref_auto_update_list_modes">
-        <item>Disabled</item>
-        <item>Once a day</item>
-        <item>Once a week</item>
-    </string-array>
-    <string-array name="pref_auto_update_list_values">
-        <item>-1</item>
-        <item>1</item>
-        <item>7</item>
-    </string-array>
-
-
-    <!--**********************-->
-    <!-- Passcode Preferences -->
-    <!--**********************-->
-    <string name="pref_header_passcode_key" translateable="false">passcode_header</string>
-    <string name="pref_header_passcode_title">Configure Passcode</string>
-    <string name="pref_passcode_toolbar_title">Passcode</string>
-
-    <string name="pref_passcode_toggle_key" translateable="false">pref_passcode_toggle</string>
-    <string name="pref_passcode_toggle_title_on">Turn passcode on</string>
-    <string name="pref_passcode_toggle_title_off">Turn passcode off</string>
-    <string name="pref_passcode_toggle_summary">a 4 digit passcode to protect your data</string>
-
-    <string name="pref_passcode_change_key" translateable="false">pref_passcode_change</string>
-    <string name="pref_passcode_change_title">Change passcode</string>
-
-
     <!--***************-->
     <!-- Alert Dialogs -->
     <!--***************-->
     <string name="dialog_error_path_key" translateable="false">dialog_error</string>
     <string name="dialog_error_path_title">Error!</string>
-    <string name="dialog_error_path_message">Could not find Wifi Password list \nWould you like to enter the path manually through settings?</string>
+    <string name="dialog_error_path_message">Sorry - Could not find Wifi Password list.</string>
     <string-array name="dialog_error_path_buttons">
-        <item>Settings</item>
         <item>Dismiss</item>
-    </string-array>
-
-    <string name="dialog_warning_reset_key" translateable="false">dialog_warning_reset</string>
-    <string name="dialog_warning_reset_title">Warning!</string>
-    <string name="dialog_warning_reset_message">Reloading data from device will erase current list
-        \n(manually entered passwords will be lost)</string>
-    <string-array name="dialog_warning_reset_buttons">
-        <item>Reload</item>
-        <item>Cancel</item>
     </string-array>
 
     <string name="dialog_exit_key" translateable="false">dialog_exit</string>
@@ -192,7 +136,7 @@
 
     <string name="dialog_delete_key" translateable="false">dialog_delete</string>
     <string name="dialog_delete_title">Delete</string>
-    <string name="dialog_delete_message">Are you sure? \n\nDeleting these passwords will permanently remove them from Oreo Wifi Passwords</string>
+    <string name="dialog_delete_message">Are you sure?</string>
     <string-array name="dialog_delete_buttons">
         <item>Confirm</item>
         <item>Cancel</item>
@@ -210,7 +154,6 @@
     <string name="dialog_error_root_title">Error! No Root Permission!</string>
     <string name="dialog_error_root_message">
         The app cannot access your saved wifi passwords without Root Permission
-        \n\nYou may still add wifi passwords manually
         \n\n(To try again please grant this app Root permission and tap \"Update List\" in the options menu)</string>
     <string-array name="dialog_error_root_button">
         <item>Dismiss</item>
@@ -220,25 +163,6 @@
     <!--*****************-->
     <!-- Dialog Fragment -->
     <!--*****************-->
-    <string name="dialog_add_key" translateable="false">dialog_input_add</string>
-    <string name="dialog_add_title_hint">Title</string>
-    <string name="dialog_add_password_hint">Password</string>
-    <string name="dialog_add_title">Add Wifi Password</string>
-    <string name="dialog_add_error_empty">One or More fields are blank</string>
-    <string name="dialog_add_title_empty">Title cannot be empty</string>
-    <string name="dialog_add_password_empty">Password cannot be empty</string>
-    <string-array name="dialog_add_buttons">
-        <item>Add</item>
-        <item>Cancel</item>
-    </string-array>
-
-    <string name="dialog_tag_key" translateable="false">dialog_input_tag</string>
-    <string name="dialog_tag_title">Modify Tag</string>
-    <string name="dialog_tag_error">Tag cannot be empty</string>
-    <string name="dialog_tag_hint">Tag</string>
-    <string name="dialog_tag_button">Save</string>
-
-
     <string name="dialog_about_key" translateable="false">dialog_about</string>
     <string name="dialog_about_title">Help &amp; Feedback</string>
     <string name="dialog_about_info">Wifi Passwords by Nexxado (+Oreo by David Mawer) - <a href="mailto:david@pithsoftware.com">Send Feedback</a></string>
@@ -255,24 +179,5 @@
     <string name="dialog_about_help_intro"><u>Show Intro</u></string>
     <string name="dialog_about_help_readme"><a href="https://github.com/Nexxado/WifiPasswords/blob/master/README.md">Readme</a></string>
     <string name="dialog_about_button">OK</string>
-
-
-    <string name="dialog_rate_title">Rate Wifi Passwords</string>
-    <string name="dialog_rate_message">If you enjoy using this app, please take a moment to rate it.\nit won\'t take more than a minute.\nThanks for your support.</string>
-    <string name="dialog_rate_button_positive">Rate now</string>
-    <string name="dialog_rate_button_remindlater">Remind later</string>
-    <string name="dialog_rate_button_never">No, thanks</string>
-
-
-    <!--*******************-->
-    <!-- Passcode Activity -->
-    <!--*******************-->
-    <string name="passcode_description">Enter your passcode</string>
-    <string name="passcode_description_error">Wrong passcode. Please try again</string>
-    <string name="passcode_description_reenter">Re-enter your passcode</string>
-    <string name="passcode_description_old">Enter your old passcode</string>
-    <string name="passcode_description_new">Enter your new passcode</string>
-    <string name="passcode_description_new_reenter">Re-enter your new passcode</string>
-
 
 </resources>

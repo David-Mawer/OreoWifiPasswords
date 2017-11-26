@@ -6,7 +6,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -38,14 +37,10 @@ import android.widget.Toast;
 
 import com.pithsoftware.wifipasswords.R;
 import com.pithsoftware.wifipasswords.activities.IntroActivity;
-import com.pithsoftware.wifipasswords.activities.MainActivity;
 import com.pithsoftware.wifipasswords.activities.SettingsActivity;
-import com.pithsoftware.wifipasswords.database.PasswordDB;
 import com.pithsoftware.wifipasswords.dialogs.CustomAlertDialogFragment;
 import com.pithsoftware.wifipasswords.dialogs.CustomAlertDialogListener;
-import com.pithsoftware.wifipasswords.dialogs.InputDialogFragment;
 import com.pithsoftware.wifipasswords.dialogs.InputDialogListener;
-import com.pithsoftware.wifipasswords.extras.AutoUpdateList;
 import com.pithsoftware.wifipasswords.extras.MyApplication;
 import com.pithsoftware.wifipasswords.extras.RequestCodes;
 import com.pithsoftware.wifipasswords.pojo.WifiEntry;
@@ -88,8 +83,6 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     FloatingActionButton mFAB;
 
     //wpa_supplicant file
-    String mPath;
-    String mFileName;
     boolean mCurrentlyLoading = false;
 
     //RecyclerView
@@ -111,15 +104,15 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     ArrayList<Integer> mActionModeSelections;
     ActionMode.Callback mActionModeCallback;
 
+    public Context AppContext;
+
 
     public static WifiListFragment newInstance() {
-
         return new WifiListFragment();
     }
 
 
     public WifiListFragment() {
-
     }
 
 
@@ -169,18 +162,14 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
                 Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.simple_grow);
                 mFAB.startAnimation(animation);
 
-                mListWifi = MyApplication.getWritableDatabase().getAllWifiEntries(false);
-                MyApplication.closeDatabase();
-
-                if (mListWifi.isEmpty() && mRootAccess) {
-
-                    loadFromFile(true);
+                if (mRootAccess) {
+                    loadFromFile();
                 }
             }
         }
 
         mAdapter.setWifiList(mListWifi);
-
+        silentRemoveNoPasswords();
 
         //Restore Context Action Mode state
         if (mActionModeEnabled) {
@@ -200,16 +189,11 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     @Override
     public void onResume() {
         super.onResume();
-
-//        RateItDialogFragment.show(getActivity(), getFragmentManager());
-        AutoUpdateList.update(getActivity(), getFragmentManager());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        new Thread(this::updateDatabase).start();
     }
 
 
@@ -233,7 +217,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
     //WifiListLoadedListener method - called from TaskLoadWifiEntries
     @Override
-    public void onWifiListLoaded(ArrayList<WifiEntry> listWifi, int numOfEntries, boolean resetDB) {
+    public void onWifiListLoaded(ArrayList<WifiEntry> listWifi, int numOfEntries) {
 
         //Hide Progress Bar
         if (mProgressBar.getVisibility() == View.VISIBLE) {
@@ -243,25 +227,20 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
         mListWifi = new ArrayList<>(listWifi);
 
         mAdapter.setWifiList(mListWifi);
-
-        if (resetDB) {
-            mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_left_to_right_slide));
-            mRecyclerView.startLayoutAnimation();
+        if (numOfEntries > 0) {
+            numOfEntries = numOfEntries - silentRemoveNoPasswords();
         }
+
+        mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_left_to_right_slide));
+        mRecyclerView.startLayoutAnimation();
 
         //Show number of wifi entries inserted
         String snackbarMessage;
 
         if (numOfEntries > 0) {
             snackbarMessage = numOfEntries + " " + getString(R.string.snackbar_wifi_entries_inserted);
-
-            if (!resetDB) {
-                mRecyclerView.smoothScrollToPosition(mListWifi.size());
-            }
-
         } else {
             snackbarMessage = getString(R.string.snackbar_wifi_entries_inserted_none);
-
         }
 
         Snackbar.make(mRoot, snackbarMessage, Snackbar.LENGTH_LONG)
@@ -310,10 +289,6 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
         switch (id) {
 
-            case R.id.action_add_from_file:
-                loadFromFile(false);
-                return true;
-
             case R.id.action_sort_start:
                 sortMode(true);
                 return true;
@@ -344,7 +319,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
                     PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean(MyApplication.FIRST_LAUNCH, false).apply();
 
-                    loadFromFile(true);
+                    loadFromFile();
                     Toast toast = Toast.makeText(getActivity(), R.string.toast_root_request, Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
@@ -374,7 +349,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
                 if (resultCode == RequestCodes.DIALOG_CONFIRM) {
 
-                    loadFromFile(true);
+                    loadFromFile();
 
                 } //Else Dismissed
                 break;
@@ -388,58 +363,18 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
 
     //Copy wpa_supplicant and extract data from it via AsyncTask
-    public void loadFromFile(boolean resetDB) {
-
-        if (!resetDB) {
-            updateDatabase();
-
-        } else {
-            mListWifi = new ArrayList<>();
-            new Thread(() -> {
-                MyApplication.getWritableDatabase().purgeDatabase();
-                MyApplication.closeDatabase();
-            }).start();
-            mAdapter.setWifiList(mListWifi);
-            mProgressBar.setVisibility(View.VISIBLE); //Show Progress Bar
-        }
+    public void loadFromFile() {
+        mListWifi = new ArrayList<>();
+        mAdapter.setWifiList(mListWifi);
+        mProgressBar.setVisibility(View.VISIBLE); //Show Progress Bar
 
         mCurrentlyLoading = true;
         hideFAB(true);
         getActivity().invalidateOptionsMenu();
 
 
-//        Snackbar.make(mRoot, R.string.snackbar_load_from_file, Snackbar.LENGTH_LONG).show();
-        //Changed to Toast as subsequent snackbars cause FAB animation to glitch
-        if (!resetDB) {
-            Toast.makeText(getActivity(), R.string.snackbar_load_from_file, Toast.LENGTH_SHORT).show();
-        }
-
-        boolean manualLocation = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getString(R.string.pref_path_checkbox_key), false);
-
-        if (manualLocation) {
-            if (!getPath()) {
-
-                showPathErrorDialog();
-                return;
-            }
-            new TaskLoadWifiEntries(mPath, mFileName, resetDB, this, this).execute();
-
-        } else {
-            new TaskLoadWifiEntries(resetDB, this, this).execute();
-        }
-
-
-    }
-
-
-    //Update database with changes made to wifi list.
-
-    private void updateDatabase() {
-
-        PasswordDB db = MyApplication.getWritableDatabase();
-        db.deleteWifiEntries(mListWifi, false);
-        db.insertWifiEntries(mListWifi, true, false);
-        MyApplication.closeDatabase();
+        Snackbar.make(mRoot, R.string.snackbar_load_from_file, Snackbar.LENGTH_LONG).show();
+        new TaskLoadWifiEntries(this, this, AppContext).execute();
     }
 
 
@@ -474,25 +409,6 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
         clipboardManager.setPrimaryClip(clipData);
 
         Snackbar.make(mRoot, snackbarMessage, Snackbar.LENGTH_SHORT).show();
-    }
-
-
-    //Retrieve wpa_supplicant Path from Settings
-    private boolean getPath() {
-
-        mPath = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getString(getString(R.string.pref_path_manual_key), getString(R.string.pref_path_default));
-
-        if (mPath == null || mPath.replace(" ", "").isEmpty()) {
-            return false;
-        }
-
-        //Split entire path to Path & Filename
-        mFileName = mPath.substring(mPath.lastIndexOf("/") + 1);
-        mPath = mPath.substring(0, mPath.lastIndexOf("/") + 1);
-
-        return !mFileName.replace(" ", "").isEmpty();
-
     }
 
     //Toggle Search Mode
@@ -534,16 +450,41 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
 
     public void hideFAB(boolean hide) {
-
-
         if (hide) {
             mFAB.hide();
             mFAB.setEnabled(false);
-
         } else {
             mFAB.show();
             mFAB.setEnabled(true);
         }
+    }
+
+    private int silentRemoveNoPasswords() {
+        int result = 0;
+        boolean showNoPassword = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getBoolean(getString(R.string.pref_show_no_password_key), false);
+        if (!showNoPassword) {
+            result = removeNoPasswords();
+        }
+        return result;
+    }
+
+    private int removeNoPasswords() {
+        int result = 0;
+        try {
+            for (int i = mListWifi.size() - 1; i >= 0; i--) {
+
+                if (mListWifi.get(i).getPassword().equals(MyApplication.NO_PASSWORD_TEXT)) {
+                    mAdapter.removeItem(i);
+                    result++;
+                }
+            }
+        } catch (Exception error) {
+            if (error != null) {
+
+            }
+        }
+        return result;
     }
 
     public void toggleNoPassword() {
@@ -552,40 +493,11 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
                 .getBoolean(getString(R.string.pref_show_no_password_key), false);
 
         if (showNoPassword) {
-
-            ArrayList<WifiEntry> listNoPassword = MyApplication.getWritableDatabase().getAllWifiEntries(false);
-            MyApplication.closeDatabase();
-
-            for (int i = 0; i < listNoPassword.size(); i++) {
-
-                if (!(listNoPassword.get(i).getPassword()).equals(MyApplication.NO_PASSWORD_TEXT)) {
-                    listNoPassword.remove(i);
-                    i--;
-                }
-            }
-
-            for (int i = 0; i < listNoPassword.size(); i++) {
-                mAdapter.addItem(mListWifi.size(), listNoPassword.get(i));
-            }
-
-            mRecyclerView.smoothScrollToPosition(mListWifi.size());
-
-            Snackbar.make(mRoot, listNoPassword.size() + " " + getString(R.string.snackbar_wifi_no_password_added), Snackbar.LENGTH_LONG)
-                    .setAction(R.string.snackbar_dismiss, v -> {
-                        //dismiss
-                    })
-                    .show();
+            // reload the grid with new setting.
+            loadFromFile();
         } else {
 
-            int removedEntries = 0;
-
-            for (int i = mListWifi.size() - 1; i >= 0; i--) {
-
-                if (mListWifi.get(i).getPassword().equals(MyApplication.NO_PASSWORD_TEXT)) {
-                    mAdapter.removeItem(i);
-                    removedEntries++;
-                }
-            }
+            int removedEntries = removeNoPasswords();
 
             mRecyclerView.smoothScrollToPosition(0);
 
@@ -763,19 +675,6 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
                         showShareDialog(selectedEntries);
                         return true;
 
-                    case R.id.menu_context_tag:
-
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelableArrayList(InputDialogFragment.ENTRIES_KEY, selectedEntries);
-                        bundle.putIntegerArrayList(InputDialogFragment.POSITIONS_LEY, selectedItems);
-
-                        InputDialogFragment fragment = InputDialogFragment.getInstance(InputDialogFragment.INPUT_TAG, bundle);
-                        fragment.setTargetFragment(getFragmentManager().findFragmentByTag(MainActivity.WIFI_LIST_FRAGMENT_TAG), RequestCodes.DIALOG_TAG_CODE);
-                        fragment.show(getFragmentManager(), getString(R.string.dialog_tag_key));
-
-                        return true;
-
-
                     default:
                         return false;
                 }
@@ -834,8 +733,8 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
     private void setupFAB() {
 
-        mFAB.setImageResource(R.drawable.ic_action_add);
-        mFAB.setOnClickListener(v -> showAddWifiDialog());
+        mFAB.setImageResource(R.drawable.ic_action_context_restore);
+        mFAB.setOnClickListener(v -> loadFromFile());
 
     }
 
@@ -846,51 +745,13 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
     @Override
     public void onSubmitAddDialog(String title, String password) {
-
         WifiEntry entry = new WifiEntry(title, password);
         mAdapter.addItem(0, entry);
         mRecyclerView.smoothScrollToPosition(0);
-        addToDatabase(entry);
-    }
-
-    private void addToDatabase(WifiEntry entry) {
-
-        PasswordDB db = MyApplication.getWritableDatabase();
-
-        ArrayList<WifiEntry> entries = new ArrayList<>();
-        entries.add(entry);
-
-        db.insertWifiEntries(entries, true, false);
-        MyApplication.closeDatabase();
-    }
-
-    private void showAddWifiDialog() {
-
-        if (getActivity() == null || !isAdded())
-            return;
-
-        InputDialogFragment fragment = InputDialogFragment
-                .getInstance(InputDialogFragment.INPUT_ENTRY, null);
-        fragment.setTargetFragment(this, RequestCodes.DIALOG_ADD_CODE);
-        fragment.show(getFragmentManager(), getString(R.string.dialog_add_key));
-
     }
 
     @Override
     public void onSubmitTagDialog(String tag, ArrayList<WifiEntry> listWifi, ArrayList<Integer> positions) {
-
-        if (getActivity() == null || !isAdded())
-            return;
-
-        for (int i = 0; i < positions.size(); i++) {
-
-            mListWifi.get(positions.get(i)).setTag(tag);
-        }
-
-        mActionMode.finish();
-        mAdapter.notifyDataSetChanged();
-        MyApplication.getWritableDatabase().updateWifiTags(listWifi, tag);
-        MyApplication.closeDatabase();
     }
 
 

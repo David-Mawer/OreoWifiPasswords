@@ -29,13 +29,12 @@ import butterknife.ButterKnife;
 public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyViewHolder>
         implements ItemTouchHelperAdapter {
 
-    LayoutInflater layoutInflater;
-    List<WifiEntry> mListWifi;
-    ItemDragListener mDragListener;
-    boolean mShowDragHandler;
-    Context mContext;
-    SparseBooleanArray mSelectedItems = new SparseBooleanArray();
-
+    private LayoutInflater layoutInflater;
+    private List<WifiEntry> mListWifi;
+    private ItemDragListener mDragListener;
+    private boolean mShowDragHandler;
+    private Context mContext;
+    private SparseBooleanArray mSelectedItems = new SparseBooleanArray();
 
 
     public WifiListAdapter(Context context, ItemDragListener dragListener) {
@@ -96,7 +95,6 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
     }
 
 
-
     @Override
     public int getItemCount() {
         return mListWifi.size();
@@ -119,7 +117,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
         } else {
             holder.mDragHandler.setVisibility(View.GONE);
 
-            if(!holder.mTagText.getText().toString().replace(" ", "").isEmpty()) {
+            if (!holder.mTagText.getText().toString().replace(" ", "").isEmpty()) {
                 holder.mTagText.setVisibility(View.VISIBLE);
 
             } else {
@@ -166,7 +164,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
 
         final WifiEntry entry = mListWifi.remove(position);
 
-        if(mSelectedItems.get(position, false)) {
+        if (mSelectedItems.get(position, false)) {
             mSelectedItems.delete(position);
         }
 
@@ -180,7 +178,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
         notifyItemInserted(position);
     }
 
-    public void moveItem(int fromPosition, int toPosition) {
+    private void moveItem(int fromPosition, int toPosition) {
 
         final WifiEntry entry = mListWifi.remove(fromPosition);
         mListWifi.add(toPosition, entry);
@@ -263,20 +261,24 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
     }
 
 
-
     /*****************************************/
     /********** View Holder Sub-Class ********/
     /*****************************************/
 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.title_wifi) TextView mTitle;
-        @Bind(R.id.password_wifi) TextView mPassword;
-        @Bind(R.id.drag_handler) ImageView mDragHandler;
-        @Bind(R.id.wifi_entry_layout) LinearLayout mBackground;
-        @Bind(R.id.tag_wifi_text) TextView mTagText;
+        @Bind(R.id.title_wifi)
+        TextView mTitle;
+        @Bind(R.id.password_wifi)
+        TextView mPassword;
+        @Bind(R.id.drag_handler)
+        ImageView mDragHandler;
+        @Bind(R.id.wifi_entry_layout)
+        LinearLayout mBackground;
+        @Bind(R.id.tag_wifi_text)
+        TextView mTagText;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);

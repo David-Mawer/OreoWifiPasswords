@@ -5,10 +5,6 @@
         android:title="top"
         android:icon="@drawable/ic_action_context_top"/>
 
-    <item android:id="@+id/menu_context_tag"
-        android:title="@string/context_tag"
-        android:icon="@drawable/ic_action_context_tag" />
-
     <item android:id="@+id/menu_context_copy"
         android:title="@string/context_copy"
         android:icon="@drawable/ic_action_context_copy" />

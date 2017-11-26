@@ -2,38 +2,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="Settings">
 
-    <PreferenceCategory android:title="@string/pref_category_general">
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/pref_path_checkbox_key"
-            android:order="100"
-            android:title="@string/pref_path_checkbox_title" />
-
-        <EditTextPreference
-            android:defaultValue="@string/pref_path_default"
-            android:key="@string/pref_path_manual_key"
-            android:minLines="2"
-            android:order="210"
-            android:summary="@string/pref_path_default"
-            android:title="@string/pref_path_manual_title" />
-
-        <Preference
-            android:key="@string/pref_reset_manual_key"
-            android:order="220"
-            android:summary="@string/pref_reset_manual_summary"
-            android:title="@string/pref_reset_manual_title" />
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="@string/pref_category_behavior">
 
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/pref_dark_theme_key"
             android:order="200"
-            android:title="@string/pref_dark_theme_title"
-            android:summary="@string/pref_dark_theme_summary"/>
+            android:summary="@string/pref_dark_theme_summary"
+            android:title="@string/pref_dark_theme_title" />
 
         <CheckBoxPreference
             android:defaultValue="true"
@@ -45,38 +21,10 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/pref_show_no_password_key"
-            android:summary="@string/pref_show_no_password_summary"
             android:order="310"
+            android:summary="@string/pref_show_no_password_summary"
             android:title="@string/pref_show_no_password_title" />
 
-        <ListPreference
-            android:defaultValue="@string/pref_auto_update_default"
-            android:entries="@array/pref_auto_update_list_modes"
-            android:entryValues="@array/pref_auto_update_list_values"
-            android:key="@string/pref_auto_update_key"
-            android:order="320"
-            android:summary="@string/pref_auto_update_default_summary"
-            android:title="@string/pref_auto_update_title"/>
-
     </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/pref_category_security">
-
-        <Preference
-            android:key="@string/pref_header_passcode_key"
-            android:title="@string/pref_header_passcode_title" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/pref_category_default">
-
-        <Preference
-            android:key="@string/pref_default_key"
-            android:order="400"
-            android:summary="@string/pref_default_summary"
-            android:title="@string/pref_default_title" />
-
-    </PreferenceCategory>
-
 
 </PreferenceScreen>
