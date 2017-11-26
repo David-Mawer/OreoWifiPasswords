@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.Xml;
 
 import com.pithsoftware.wifipasswords.BuildConfig;
@@ -22,6 +23,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import static android.content.ContentValues.TAG;
 
 
 /***********************************************************************/
@@ -56,7 +59,19 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                 return null;
             }
         } else {
-            return readFile();
+            // Load from the pre-Oreo location(s)
+            ArrayList<WifiEntry> result = readFile();
+            if (result == null) {
+                result = new ArrayList<>();
+            }
+
+            // Add Oreo results here.
+            ArrayList<WifiEntry> oreoList = readOreoFile();
+            if ((oreoList != null) && (!oreoList.isEmpty())) {
+                result.addAll(oreoList);
+            }
+
+            return result;
         }
     }
 
@@ -357,15 +372,9 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                 }
             }
 
-            // Add Oreo results here.
-            ArrayList<WifiEntry> oreoList = readOreoFile();
-            if ((oreoList != null) && (!oreoList.isEmpty())) {
-                listWifi.addAll(oreoList);
-            }
-
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.w(TAG, "readFile failed to load non-Oreo file (will check Oreo file next): ", e);
             return null;
         }
 
