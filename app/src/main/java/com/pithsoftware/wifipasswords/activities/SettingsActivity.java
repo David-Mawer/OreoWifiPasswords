@@ -1,6 +1,8 @@
 package com.pithsoftware.wifipasswords.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -9,9 +11,11 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.pithsoftware.wifipasswords.R;
 import com.pithsoftware.wifipasswords.dialogs.AboutDialogFragment;
@@ -26,10 +30,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     static final String SETTINGS_FRAGMENT_TAG = "settings_fragment_tag";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         if (MyApplication.sIsDark) {
             setTheme(R.style.AppTheme_Dark);
         }
@@ -46,6 +48,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             sBar.setDisplayShowHomeEnabled(true);
             sBar.setDisplayHomeAsUpEnabled(true);
             sBar.setDisplayShowTitleEnabled(true);
+
         }
 
 
@@ -59,7 +62,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         // Display the fragment as the main content
         getFragmentManager().beginTransaction()
                 .replace(R.id.settings_frame, mSettingsFragment, SETTINGS_FRAGMENT_TAG).commit();
-
 
     }
 
@@ -125,6 +127,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     /***************************************************************/
     public static class SettingsFragment extends PreferenceFragment {
 
+
         /***** Bind Summary to value - Listener *****/
         private Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener
                 = (preference, newValue) -> {
@@ -141,6 +144,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 int index = ((ListPreference) preference).findIndexOfValue(stringValue);
                 String summary = "";
+
+                if (preference.getKey().equals(getString(R.string.pref_auto_update_key))) {
+                    String disabled = getResources().getStringArray(R.array.pref_auto_update_list_values)[0];
+                    if (!stringValue.equals(disabled))
+                        summary += getString(R.string.pref_auto_update_summary) + " - ";
+                }
+
                 summary += ((ListPreference) preference).getEntries()[index];
                 preference.setSummary(summary);
             }
@@ -168,15 +178,31 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             getActivity().setResult(RESULT_CANCELED);
 
             loadGeneralPreferences();
-
         }
 
 
         //Helper method for onCreate
         public void loadGeneralPreferences() {
 
+
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.preferences);
+
+
+            Preference resetManualPath = findPreference(getString(R.string.pref_reset_manual_key));
+            resetManualPath.setOnPreferenceClickListener(preference -> {
+                resetPathPref();
+                return true;
+            });
+
+            //set dependency on checkbox
+            resetManualPath.setDependency(getString(R.string.pref_path_checkbox_key));
+            findPreference(getString(R.string.pref_path_manual_key)).setDependency(getString(R.string.pref_path_checkbox_key));
+
+            findPreference(getString(R.string.pref_default_key)).setOnPreferenceClickListener(preference -> {
+                showResetWarningDialog();
+                return true;
+            });
 
             findPreference(getString(R.string.pref_show_no_password_key)).setOnPreferenceClickListener(preference -> {
                 getActivity().setResult(RequestCodes.SHOW_NO_PASSWORD_CODE);
@@ -190,10 +216,53 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 return true;
             });
 
+            //Summary to Value
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_path_manual_key)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_auto_update_key)));
         }
 
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Restore wpa_supplicant path to default
+        private void resetPathPref() {
+
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString(getString(R.string.pref_path_manual_key), getString(R.string.pref_path_default));
+            editor.apply();
+
+
+            findPreference(getString(R.string.pref_path_manual_key)).setSummary(getString(R.string.pref_path_default));
+
+            //Refresh Preference Screen
+            setPreferenceScreen(null);
+            loadGeneralPreferences();
+
+        }
+
+
+        private void showResetWarningDialog() {
+
+            String[] buttons = getResources().getStringArray(R.array.dialog_warning_reset_buttons);
+
+            AlertDialog.Builder builder;
+
+            if (MyApplication.sIsDark) {
+                builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme_Dark);
+            } else {
+                builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
+            }
+
+            //Send Result Codes to target fragment according to button clicked
+            builder.setMessage(R.string.dialog_warning_reset_message)
+                    .setTitle(R.string.dialog_warning_reset_title)
+                    .setPositiveButton(buttons[0], (dialog, which) -> {
+                        getActivity().setResult(RequestCodes.RESET_TO_DEFAULT);
+                        getActivity().finish();
+                    })
+                    .setNegativeButton(buttons[1], (dialog, which) -> {
+                        //Dismiss Dialog
+                    });
+
+            builder.create().show();
         }
 
     }

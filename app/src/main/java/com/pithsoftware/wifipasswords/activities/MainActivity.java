@@ -73,6 +73,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        if (isFinishing()) {
+            MyApplication.mAppWentBackground = true;
+        }
     }
 
     @Override
@@ -162,14 +166,8 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
 
                     if (mWifiListFragment.isVisible())
-                        mWifiListFragment.loadFromFile();
+                        mWifiListFragment.loadFromFile(true);
                 }
-                break;
-
-
-            case RequestCodes.ACTIVITY_ARCHIVE_CODE: //return from ArchiveActivity
-
-                mWifiListFragment.onActivityResult(requestCode, resultCode, data);
                 break;
 
 
@@ -177,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (resultCode == RequestCodes.RESET_TO_DEFAULT) {
 
-                    mWifiListFragment.loadFromFile();
+                    mWifiListFragment.loadFromFile(true);
 
                 } else if (resultCode == RequestCodes.SHOW_NO_PASSWORD_CODE) {
 

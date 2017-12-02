@@ -1,15 +1,10 @@
 package com.pithsoftware.wifipasswords.task;
 
 
-import android.content.Context;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.Xml;
 
-import com.pithsoftware.wifipasswords.BuildConfig;
+import com.pithsoftware.wifipasswords.database.PasswordDB;
 import com.pithsoftware.wifipasswords.dialogs.CustomAlertDialogListener;
 import com.pithsoftware.wifipasswords.extras.MyApplication;
 import com.pithsoftware.wifipasswords.extras.RootCheck;
@@ -24,8 +19,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import static android.content.ContentValues.TAG;
-
 
 /***********************************************************************/
 //Copy wpa_supplicant.conf from /data/misc/wifi to sdcard/WifiPasswords
@@ -33,18 +26,38 @@ import static android.content.ContentValues.TAG;
 /***********************************************************************/
 public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiEntry>> {
 
-    private WifiListLoadedListener mListListener;
-    private boolean mRootAccess = true;
-    private CustomAlertDialogListener mDialogListener;
-    private String[] mLocationList = {"/data/misc/wifi/wpa_supplicant.conf", "/data/wifi/bcm_supp.conf", "/data/misc/wifi/wpa.conf"};
-    private ArrayList<WifiEntry> mDummyData = null;
-    private Context mAppContext;
+    WifiListLoadedListener mListListener;
+    boolean mRootAccess = true;
+    String mPath;
+    String mFileName;
+    CustomAlertDialogListener mDialogListener;
+    boolean mResetDB;
+    String[] mLocationList = {"/data/misc/wifi/wpa_supplicant.conf", "/data/wifi/bcm_supp.conf", "/data/misc/wifi/wpa.conf"};
+    String mOreoLocation = "/data/misc/wifi/WifiConfigStore.xml";
+    boolean mManualLocation;
+
+    final String SSID = "ssid";
+    final String WPA_PSK = "psk";
+    final String WEP_PSK = "wep_key0";
+    final String ENTRY_START = "network={";
+    final String ENTRY_END = "}";
+
+    //Constructor for Manual Path
+    public TaskLoadWifiEntries(String filePath, String fileName, boolean resetDB, WifiListLoadedListener listListener, CustomAlertDialogListener dialogListener) {
+        mListListener = listListener;
+        mPath = filePath;
+        mFileName = fileName;
+        mDialogListener = dialogListener;
+        mResetDB = resetDB;
+        mManualLocation = true;
+    }
 
     //Constructor for Known Paths
-    public TaskLoadWifiEntries(WifiListLoadedListener listListener, CustomAlertDialogListener dialogListener, Context appContext) {
+    public TaskLoadWifiEntries(boolean resetDB, WifiListLoadedListener listListener, CustomAlertDialogListener dialogListener) {
         mListListener = listListener;
         mDialogListener = dialogListener;
-        mAppContext = appContext;
+        mResetDB = resetDB;
+        mManualLocation = false;
     }
 
 
@@ -52,35 +65,42 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
     protected ArrayList<WifiEntry> doInBackground(String... params) {
 
         if (!(mRootAccess = RootCheck.canRunRootCommands())) {
-            if (BuildConfig.DEBUG) {
-                return CreateDummyData();
-            } else {
-                cancel(true);
-                return null;
-            }
-        } else {
-            // Load from the pre-Oreo location(s)
-            ArrayList<WifiEntry> result = readFile();
-            if (result == null) {
-                result = new ArrayList<>();
-            }
-
-            // Add Oreo results here.
-            ArrayList<WifiEntry> oreoList = readOreoFile();
-            if ((oreoList != null) && (!oreoList.isEmpty())) {
-                result.addAll(oreoList);
-            }
-
-            return result;
+            cancel(true);
+            return null;
         }
+
+        ArrayList<WifiEntry> result;
+
+        if (android.os.Build.VERSION.SDK_INT >= 26) { // Hard-CODED: Oreo
+            result = readOreoFile();
+        } else {
+            result = readFile();
+        }
+
+        return result;
     }
+
 
     @Override
     protected void onPostExecute(ArrayList<WifiEntry> wifiEntries) {
-        // Update RecyclerView
+
+        //Insert Wifi Entries to database
+        PasswordDB db = MyApplication.getWritableDatabase();
+
+//        if (mResetDB) {
+//            db.purgeDatabase();
+//        }
+
+        db.insertWifiEntries(wifiEntries, mResetDB, false); //keep Tags according to mResetDB
+
+        //Update RecyclerView
         if (mListListener != null) {
-            mListListener.onWifiListLoaded(wifiEntries, wifiEntries.size());
+
+            wifiEntries = new ArrayList<>(db.getAllWifiEntries(false)); //re-read list from database as it removes duplicates
+            mListListener.onWifiListLoaded(wifiEntries, mResetDB ? wifiEntries.size() : PasswordDB.mNewEntriesOnLastInsert, mResetDB);
         }
+
+        MyApplication.closeDatabase();
     }
 
 
@@ -90,60 +110,22 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
 
         //Show "No Root Access" error
         if (!mRootAccess) {
+
             if (mDialogListener != null) {
+
                 mDialogListener.showRootErrorDialog();
             }
         }
 
     }
 
-    /*
-        Create dummy data to test UI for non-root roms.
-    */
 
     /****************************************************/
     /****************** Helper Methods ******************/
     /****************************************************/
 
-    private Boolean IsWifiConnected(String wifiName, String connectedToName) {
-        return wifiName.equals(connectedToName);
-    }
-
-    private String getWifiName() {
-        WifiManager manager = (WifiManager) mAppContext.getSystemService(Context.WIFI_SERVICE);
-        if (manager.isWifiEnabled()) {
-            WifiInfo wifiInfo = manager.getConnectionInfo();
-            if (wifiInfo != null) {
-                NetworkInfo.DetailedState state = WifiInfo.getDetailedStateOf(wifiInfo.getSupplicantState());
-                if (state == NetworkInfo.DetailedState.CONNECTED || state == NetworkInfo.DetailedState.OBTAINING_IPADDR) {
-                    String result = wifiInfo.getSSID();
-                    if (Character.toString(result.charAt(0)).equals("\"")) {
-                        result = result.substring(1, result.length() - 1);
-                    }
-                    return result;
-                }
-            }
-        }
-        return null;
-    }
-
-    private ArrayList<WifiEntry> CreateDummyData() {
-        if (mDummyData == null) {
-            mDummyData = new ArrayList<>();
-            for (int i = 0; i < 10; i++) {
-                if ((i % 3) == 0) {
-                    mDummyData.add(new WifiEntry("TestData #" + i, MyApplication.NO_PASSWORD_TEXT));
-                } else {
-                    mDummyData.add(new WifiEntry("TestData #" + i, "testPwd #" + i, (i == 5)));
-                }
-            }
-        }
-        return mDummyData;
-    }
-
     /****************** Oreo Helper Methods: BEGIN ******************/
     private ArrayList<WifiEntry> readNetworkList(XmlPullParser parser) throws XmlPullParserException, IOException {
-        String currentSSID = getWifiName();
         ArrayList<WifiEntry> result = new ArrayList<>();
         parser.require(XmlPullParser.START_TAG, null, "NetworkList");
         boolean doLoop = true;
@@ -160,12 +142,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
 
             if (tagName.equals("Network")) {
                 WifiEntry newWifi = readNetworkEntry(parser);
-                newWifi.setConnectedInd(IsWifiConnected(newWifi.getTitle(), currentSSID));
                 if (newWifi.getTitle().length() != 0) {
-                    String passwordStr = newWifi.getPassword().trim();
-                    if (passwordStr.equals("")) {
-                        newWifi.setPassword(MyApplication.NO_PASSWORD_TEXT);
-                    }
                     result.add(newWifi);
                 }
             } else {
@@ -178,7 +155,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
     // Parses a "Network" entry
     private WifiEntry readNetworkEntry(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, null, "Network");
-        WifiEntry result = new WifiEntry("", "");
+        WifiEntry result = new WifiEntry("", MyApplication.NO_PASSWORD_TEXT);
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -258,7 +235,6 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
     private ArrayList<WifiEntry> readOreoFile() {
         ArrayList<WifiEntry> result = new ArrayList<>();
         try {
-            String mOreoLocation = "/data/misc/wifi/WifiConfigStore.xml";
             Process suOreoProcess = Runtime.getRuntime().exec("su -c /system/bin/cat " + mOreoLocation);
             try {
                 suOreoProcess.waitFor();
@@ -281,11 +257,12 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
             e.printStackTrace();
         } catch (XmlPullParserException e) {
             e.printStackTrace();
-        }
-        if (!result.isEmpty()) {
-            return result;
-        } else {
-            return null;
+        } finally {
+            if (!result.isEmpty()) {
+                return result;
+            } else {
+                return null;
+            }
         }
     }
 
@@ -293,16 +270,15 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
 
     private ArrayList<WifiEntry> readFile() {
 
-        String currentSSID = getWifiName();
         ArrayList<WifiEntry> listWifi = new ArrayList<>();
         BufferedReader bufferedReader = null;
 
         try {
 
-            // Check for file in all known locations
-            for (int i = 0; i < mLocationList.length; i++) {
+            if (mManualLocation) {
 
-                Process suProcess = Runtime.getRuntime().exec("su -c /system/bin/cat " + mLocationList[i]);
+
+                Process suProcess = Runtime.getRuntime().exec("su -c /system/bin/cat " + mPath + mFileName);
                 try {
                     suProcess.waitFor();
                 } catch (InterruptedException e) {
@@ -312,16 +288,42 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                 bufferedReader = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
                 String testString = bufferedReader.readLine();
 
-                if (testString != null) {
-                    break;
-
-                } else if (i == mLocationList.length - 1) {
+                if (testString == null) {
                     //Show Error Dialog
 
                     if (mRootAccess) {
                         mDialogListener.showPathErrorDialog();
                     }
+
                     return new ArrayList<>();
+                }
+
+            } else {
+
+                //Check for file in all known locations
+                for (int i = 0; i < mLocationList.length; i++) {
+
+                    Process suProcess = Runtime.getRuntime().exec("su -c /system/bin/cat " + mLocationList[i]);
+                    try {
+                        suProcess.waitFor();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    bufferedReader = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
+                    String testString = bufferedReader.readLine();
+
+                    if (testString != null) {
+                        break;
+
+                    } else if (i == mLocationList.length - 1) {
+                        //Show Error Dialog
+
+                        if (mRootAccess) {
+                            mDialogListener.showPathErrorDialog();
+                        }
+                        return new ArrayList<>();
+                    }
                 }
             }
 
@@ -329,25 +331,21 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                 return new ArrayList<>();
             }
 
+
             String line;
             String title = "";
             String password = "";
 
             while ((line = bufferedReader.readLine()) != null) {
-                String ENTRY_START = "network={";
                 if (line.contains(ENTRY_START)) {
 
-                    String ENTRY_END = "}";
                     while (!line.contains(ENTRY_END)) {
                         line = bufferedReader.readLine();
 
-                        String SSID = "ssid";
                         if (line.contains(SSID)) {
                             title = line.replace(SSID, "").replace("=", "").replace("\"", "").replace(" ", "");
                         }
 
-                        String WEP_PSK = "wep_key0";
-                        String WPA_PSK = "psk";
                         if (line.contains(WPA_PSK)) {
 
                             password = line.replace(WPA_PSK, "").replace("=", "").replace("\"", "").replace(" ", "");
@@ -364,7 +362,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                         password = MyApplication.NO_PASSWORD_TEXT;
                     }
 
-                    WifiEntry current = new WifiEntry(title, password, IsWifiConnected(title, currentSSID));
+                    WifiEntry current = new WifiEntry(title, password);
                     listWifi.add(current);
 
                     title = "";
@@ -372,9 +370,8 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                 }
             }
 
-
         } catch (IOException e) {
-            Log.w(TAG, "readFile failed to load non-Oreo file (will check Oreo file next): ", e);
+            e.printStackTrace();
             return null;
         }
 

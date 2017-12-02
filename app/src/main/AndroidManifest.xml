@@ -23,9 +23,5 @@
         <activity
             android:name="com.pithsoftware.wifipasswords.activities.IntroActivity"
             android:label="@string/activity_title_intro" />
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="06f213f31a8be7b286366ad575d0b66761422192" />
     </application>
 </manifest>
