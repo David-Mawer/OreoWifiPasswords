@@ -1,6 +1,9 @@
 package com.pithsoftware.wifipasswords.recycler;
 
 import android.content.Context;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.MotionEventCompat;
@@ -11,11 +14,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.pithsoftware.wifipasswords.R;
+import com.pithsoftware.wifipasswords.extras.MyApplication;
 import com.pithsoftware.wifipasswords.pojo.WifiEntry;
 
 import java.util.ArrayList;
@@ -29,12 +34,13 @@ import butterknife.ButterKnife;
 public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyViewHolder>
         implements ItemTouchHelperAdapter {
 
-    LayoutInflater layoutInflater;
-    List<WifiEntry> mListWifi;
-    ItemDragListener mDragListener;
-    boolean mShowDragHandler;
-    Context mContext;
-    SparseBooleanArray mSelectedItems = new SparseBooleanArray();
+    private LayoutInflater layoutInflater;
+    private List<WifiEntry> mListWifi;
+    private ItemDragListener mDragListener;
+    private boolean mShowDragHandler;
+    private Context mContext;
+    private SparseBooleanArray mSelectedItems = new SparseBooleanArray();
+    private boolean mShowPublic = false;
 
 
     public WifiListAdapter(Context context, ItemDragListener dragListener) {
@@ -58,6 +64,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
         WifiEntry currentEntry = mListWifi.get(position);
 
         holder.mTitle.setText(currentEntry.getTitle());
+        holder.mCurrentInd.setChecked(currentEntry.getConnectedInd());
         holder.mPassword.setText(currentEntry.getPassword());
         holder.mTagText.setText(currentEntry.getTag());
 
@@ -101,9 +108,11 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
     }
 
 
-    public void setWifiList(ArrayList<WifiEntry> listWifi) {
-
+    public void setWifiList(ArrayList<WifiEntry> listWifi, boolean showPublic) {
+        mShowPublic = showPublic;
         mListWifi = listWifi;
+        // Clean up the list
+        validateAllEntries();
         notifyDataSetChanged();
     }
 
@@ -155,6 +164,48 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
         }
         return items;
     }
+    // Remove the entry if it's got a blank password, and "open networks" not checked.
+    // tick the entry if it's the current connection.
+    private int validateAllEntries() {
+        int result = 0;
+        String currentSSID = getWifiName();
+        try {
+            for (int i = mListWifi.size() - 1; i >= 0; i--) {
+                WifiEntry thisEntry = mListWifi.get(i);
+                if (!mShowPublic && thisEntry.getPassword().equals(MyApplication.NO_PASSWORD_TEXT)) {
+                    removeItem(i);
+                    result++;
+                } else {
+                    String title = thisEntry.getTitle();
+                    thisEntry.setConnectedInd(title.equals(currentSSID));
+                }
+            }
+        } catch (Exception error) {
+            if (error != null) {
+
+            }
+        }
+        return result;
+    }
+
+    private String getWifiName() {
+        WifiManager manager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+        if (manager.isWifiEnabled()) {
+            WifiInfo wifiInfo = manager.getConnectionInfo();
+            if (wifiInfo != null) {
+                NetworkInfo.DetailedState state = WifiInfo.getDetailedStateOf(wifiInfo.getSupplicantState());
+                if (state == NetworkInfo.DetailedState.CONNECTED || state == NetworkInfo.DetailedState.OBTAINING_IPADDR) {
+                    String result = wifiInfo.getSSID();
+                    if (Character.toString(result.charAt(0)).equals("\"")) {
+                        result = result.substring(1, result.length() - 1);
+                    }
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
 
     /**********************************************/
     /************ Items Changes Methods ***********/
@@ -178,7 +229,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
         notifyItemInserted(position);
     }
 
-    public void moveItem(int fromPosition, int toPosition) {
+    private void moveItem(int fromPosition, int toPosition) {
 
         final WifiEntry entry = mListWifi.remove(fromPosition);
         mListWifi.add(toPosition, entry);
@@ -269,6 +320,8 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
 
         @Bind(R.id.title_wifi)
         TextView mTitle;
+        @Bind(R.id.current_wifi)
+        CheckBox mCurrentInd;
         @Bind(R.id.password_wifi)
         TextView mPassword;
         @Bind(R.id.drag_handler)
@@ -278,7 +331,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
         @Bind(R.id.tag_wifi_text)
         TextView mTagText;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);

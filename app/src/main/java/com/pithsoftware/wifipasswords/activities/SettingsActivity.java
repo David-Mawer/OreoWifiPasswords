@@ -26,7 +26,6 @@ import com.pithsoftware.wifipasswords.extras.RequestCodes;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-    static Toolbar mToolbar;
     SettingsFragment mSettingsFragment;
 
     static final String SETTINGS_FRAGMENT_TAG = "settings_fragment_tag";
@@ -39,8 +38,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        mToolbar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar;
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(getString(R.string.action_settings));
 
         ActionBar sBar = getSupportActionBar();
         if (sBar != null) {
@@ -183,7 +184,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         //Helper method for onCreate
         public void loadGeneralPreferences() {
 
-            mToolbar.setTitle(getString(R.string.action_settings));
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.preferences);

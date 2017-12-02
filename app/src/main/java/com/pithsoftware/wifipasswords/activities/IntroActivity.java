@@ -1,7 +1,6 @@
 package com.pithsoftware.wifipasswords.activities;
 
 
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -9,7 +8,6 @@ import android.support.v4.content.ContextCompat;
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.pithsoftware.wifipasswords.R;
-import com.pithsoftware.wifipasswords.extras.MyApplication;
 
 public class IntroActivity extends AppIntro2 {
 

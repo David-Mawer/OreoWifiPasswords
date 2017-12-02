@@ -171,12 +171,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
 
-            case RequestCodes.ACTIVITY_ARCHIVE_CODE: //return from ArchiveActivity
-
-                mWifiListFragment.onActivityResult(requestCode, resultCode, data);
-                break;
-
-
             case RequestCodes.ACTIVITY_SETTINGS_CODE: //Return from Settings Activity - Reset to Default
 
                 if (resultCode == RequestCodes.RESET_TO_DEFAULT) {

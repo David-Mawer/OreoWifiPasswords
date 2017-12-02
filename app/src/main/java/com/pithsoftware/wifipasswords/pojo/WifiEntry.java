@@ -22,14 +22,25 @@ public class WifiEntry implements Parcelable {
     private String title;
     private String password;
     private String tag = "";
+    private boolean connectedInd = false;
 
 
-
-    public WifiEntry() {}
+    public WifiEntry() {
+    }
 
     public WifiEntry(String title, String password) {
+        initVars(title, password, false, "");
+    }
+
+    public WifiEntry(String title, String password, boolean connectedInd) {
+        initVars(title, password, connectedInd, "");
+    }
+
+    private void initVars(String title, String password, boolean connectedInd, String tag) {
         this.title = title;
         this.password = password;
+        this.connectedInd = connectedInd;
+        this.tag = tag;
     }
 
 
@@ -49,6 +60,14 @@ public class WifiEntry implements Parcelable {
         this.password = password;
     }
 
+    public boolean getConnectedInd() {
+        return connectedInd;
+    }
+
+    public void setConnectedInd(boolean connectedInd) {
+        this.connectedInd = connectedInd;
+    }
+
     public String getTag() {
         return tag;
     }
@@ -59,18 +78,18 @@ public class WifiEntry implements Parcelable {
 
     @Override
     public String toString() {
-        return "Wifi: " + title + ", pass: " + password + ", tag: " + tag + "\n";
+        return "Wifi: " + title + ", pass: " + password + ", Connected: " + connectedInd + ", tag: " + tag + "\n";
     }
 
     /************************************************************/
     //Parcelable Implementation
 
 
-
     //Parcel Constructor
     protected WifiEntry(Parcel in) {
         title = in.readString();
         password = in.readString();
+        this.connectedInd = (in.readInt() == 1);
         tag = in.readString();
     }
 
@@ -85,6 +104,8 @@ public class WifiEntry implements Parcelable {
 
         dest.writeString(title);
         dest.writeString(password);
+        dest.writeInt(connectedInd ? 1 : 0);
         dest.writeString(tag);
     }
+
 }

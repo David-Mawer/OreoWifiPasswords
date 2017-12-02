@@ -176,8 +176,8 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
             }
         }
 
-        mAdapter.setWifiList(mListWifi);
-//        silentRemoveNoPasswords();
+        mAdapter.setWifiList(mListWifi, PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getBoolean(getString(R.string.pref_show_no_password_key), false));
 
         //Restore Context Action Mode state
         if (mActionModeEnabled) {
@@ -236,7 +236,8 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
         mListWifi = new ArrayList<>(listWifi);
 
-        mAdapter.setWifiList(mListWifi);
+        mAdapter.setWifiList(mListWifi, PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getBoolean(getString(R.string.pref_show_no_password_key), false));
 
         if (resetDB) {
             mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_left_to_right_slide));
@@ -393,7 +394,8 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
                 MyApplication.getWritableDatabase().purgeDatabase();
                 MyApplication.closeDatabase();
             }).start();
-            mAdapter.setWifiList(mListWifi);
+            mAdapter.setWifiList(mListWifi, PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .getBoolean(getString(R.string.pref_show_no_password_key), false));
             mProgressBar.setVisibility(View.VISIBLE); //Show Progress Bar
         }
 
@@ -843,16 +845,6 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
         MyApplication.getWritableDatabase().updateWifiTags(listWifi, tag);
         MyApplication.closeDatabase();
     }
-
-//    private int silentRemoveNoPasswords() {
-//        int result = 0;
-//        boolean showNoPassword = PreferenceManager.getDefaultSharedPreferences(getActivity())
-//                .getBoolean(getString(R.string.pref_show_no_password_key), false);
-//        if (!showNoPassword) {
-//            result = removeNoPasswords();
-//        }
-//        return result;
-//    }
 
 
     private void showShareDialog(final ArrayList<WifiEntry> listWifi) {

@@ -4,7 +4,6 @@ package com.pithsoftware.wifipasswords.extras;
 public class RequestCodes {
 
     public static final int ACTIVITY_INTRO_CODE = 30;
-    public static final int ACTIVITY_ARCHIVE_CODE = 41;
     public static final int ACTIVITY_SETTINGS_CODE = 42;
 
     public static final int SETTINGS_PATH_ERROR_CODE = 50;

@@ -69,7 +69,15 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
             return null;
         }
 
-        return readFile();
+        ArrayList<WifiEntry> result;
+
+        if (android.os.Build.VERSION.SDK_INT >= 26) { // Hard-CODED: Oreo
+            result = readOreoFile();
+        } else {
+            result = readFile();
+        }
+
+        return result;
     }
 
 
@@ -147,7 +155,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
     // Parses a "Network" entry
     private WifiEntry readNetworkEntry(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, null, "Network");
-        WifiEntry result = new WifiEntry("", "");
+        WifiEntry result = new WifiEntry("", MyApplication.NO_PASSWORD_TEXT);
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -361,13 +369,6 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                     password = "";
                 }
             }
-
-            // Add Oreo results here.
-            ArrayList<WifiEntry> oreoList = readOreoFile();
-            if ((oreoList != null) && (!oreoList.isEmpty())) {
-                listWifi.addAll(oreoList);
-            }
-
 
         } catch (IOException e) {
             e.printStackTrace();
