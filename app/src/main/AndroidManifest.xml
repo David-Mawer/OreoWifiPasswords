@@ -21,13 +21,7 @@
             android:name="com.pithsoftware.wifipasswords.activities.SettingsActivity"
             android:label="@string/action_settings" />
         <activity
-            android:name="com.pithsoftware.wifipasswords.activities.ArchiveActivity"
-            android:label="@string/activity_title_hidden_wifi" />
-        <activity
             android:name="com.pithsoftware.wifipasswords.activities.IntroActivity"
             android:label="@string/activity_title_intro" />
-        <activity
-            android:name="com.pithsoftware.wifipasswords.activities.PasscodeActivity"
-            android:label="@string/activity_title_passcode" />
     </application>
 </manifest>

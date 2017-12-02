@@ -17,8 +17,4 @@
         android:title="@string/context_share"
         android:icon="@drawable/ic_action_share" />
 
-    <item android:id="@+id/menu_context_archive"
-        android:title="@string/context_archive"
-        android:icon="@drawable/ic_action_context_archive" />
-
 </menu>

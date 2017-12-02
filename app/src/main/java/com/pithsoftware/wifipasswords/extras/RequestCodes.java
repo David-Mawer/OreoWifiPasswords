@@ -21,10 +21,4 @@ public class RequestCodes {
     public static final int SHOW_NO_PASSWORD_CODE = 998;
     public static final int RESET_TO_DEFAULT = 999;
 
-
-    public static final int PASSCODE_PREF_ENABLE = 500;
-    public static final int PASSCODE_PREF_DISABLE = 501;
-    public static final int PASSCODE_PREF_CHANGE = 502;
-    public static final int PASSCODE_ACTIVITY = 510;
-
 }

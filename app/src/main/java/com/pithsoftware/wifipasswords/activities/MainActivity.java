@@ -20,7 +20,6 @@ import com.pithsoftware.wifipasswords.dialogs.AboutDialogFragment;
 import com.pithsoftware.wifipasswords.extras.MyApplication;
 import com.pithsoftware.wifipasswords.extras.RequestCodes;
 import com.pithsoftware.wifipasswords.fragments.WifiListFragment;
-import com.pithsoftware.wifipasswords.task.TaskCheckPasscode;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mWifiListFragment = (WifiListFragment) getSupportFragmentManager().findFragmentByTag(WIFI_LIST_FRAGMENT_TAG);
         }
-	        mWifiListFragment.AppContext = getApplicationContext();
+        mWifiListFragment.AppContext = getApplicationContext();
 
         getSupportFragmentManager().beginTransaction().replace
                 (R.id.content_frame, mWifiListFragment, WIFI_LIST_FRAGMENT_TAG).commit();
@@ -69,22 +68,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        if(MyApplication.mPasscodeActivated && MyApplication.mAppWentBackground) {
-            startActivity(new Intent(this, PasscodeActivity.class));
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        if(MyApplication.mPasscodeActivated && !isFinishing()) {
-
-            new TaskCheckPasscode(getApplicationContext()).execute();
-
-        } else if (isFinishing()) {
-
+        if (isFinishing()) {
             MyApplication.mAppWentBackground = true;
         }
     }
@@ -141,11 +131,6 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         switch (id) {
-
-            case R.id.action_hidden_list:
-                compat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, null);
-                startActivityForResult(new Intent(this, ArchiveActivity.class), RequestCodes.ACTIVITY_ARCHIVE_CODE, compat.toBundle());
-                return true;
 
             case R.id.action_settings:
                 //Start Settings with Transition

@@ -10,7 +10,6 @@ import com.github.paolorotolo.appintro.AppIntro2;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.pithsoftware.wifipasswords.R;
 import com.pithsoftware.wifipasswords.extras.MyApplication;
-import com.pithsoftware.wifipasswords.task.TaskCheckPasscode;
 
 public class IntroActivity extends AppIntro2 {
 
@@ -71,20 +70,10 @@ public class IntroActivity extends AppIntro2 {
     @Override
     protected void onPause() {
         super.onPause();
-
-        if(MyApplication.mPasscodeActivated && !isFinishing()) {
-
-            new TaskCheckPasscode(getApplicationContext()).execute();
-
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        if(MyApplication.mPasscodeActivated && MyApplication.mAppWentBackground) {
-            startActivity(new Intent(this, PasscodeActivity.class));
-        }
     }
 }

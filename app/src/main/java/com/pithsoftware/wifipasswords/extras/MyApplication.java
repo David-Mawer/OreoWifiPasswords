@@ -19,15 +19,10 @@ public class MyApplication extends Application {
     private static PasswordDB mPasswordDB;
     private static AtomicInteger mOpenCounter = new AtomicInteger();
 
-    public static boolean mPasscodeActivated;
     public static boolean mAppWentBackground;
 
     public static final String FIRST_LAUNCH = "first_launch";
     public static final String DEVICE_UUID = "uuid";
-
-    public static final String PASSCODE_STATE = "passcode_state";
-    public static final String PASSCODE_KEY = "passcode_key";
-    public static final String PASSCODE_REQUEST_CODE = "passcode_request_code";
 
     public static final String NO_PASSWORD_TEXT = "no password";
 
@@ -51,9 +46,8 @@ public class MyApplication extends Application {
         }
 
 
-        mPasscodeActivated = sharedPreferences.getBoolean(PASSCODE_STATE, false);
         mAppWentBackground = true;
-        sShouldAutoUpdateList = !mPasscodeActivated;
+        sShouldAutoUpdateList = true;
 
         sIsDark = sharedPreferences.getBoolean(getString(R.string.pref_dark_theme_key), false);
     }
