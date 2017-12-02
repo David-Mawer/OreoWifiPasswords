@@ -14,6 +14,7 @@
     <dimen name="size_text_secondary">14sp</dimen>
     <dimen name="size_list_item">72dp</dimen>
 
+    <dimen name="dialog_input_margin">16dp</dimen>
     <dimen name="dialog_help_margin">16dp</dimen>
     <dimen name="dialog_help_padding">4dp</dimen>
 

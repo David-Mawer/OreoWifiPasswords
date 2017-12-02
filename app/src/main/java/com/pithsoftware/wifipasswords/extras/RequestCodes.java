@@ -10,6 +10,8 @@ public class RequestCodes {
 
     public static final int DIALOG_PATH_ERROR_CODE = 51;
     public static final int DIALOG_LOAD_WARNING_CODE = 52;
+    public static final int DIALOG_ADD_CODE = 53;
+    public static final int DIALOG_TAG_CODE = 54;
 
     public static final int DIALOG_CANCEL = 98;
     public static final int DIALOG_CONFIRM = 99;

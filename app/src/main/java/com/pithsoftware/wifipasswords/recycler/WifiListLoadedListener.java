@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 public interface WifiListLoadedListener {
 
-    public void onWifiListLoaded(ArrayList<WifiEntry> listWifi, int numOfEntries);
+    public void onWifiListLoaded(ArrayList<WifiEntry> listWifi, int numOfEntries, boolean resetDB);
 
 }
