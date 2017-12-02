@@ -525,25 +525,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
         boolean showNoPassword = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getBoolean(getString(R.string.pref_show_no_password_key), false);
         if (showNoPassword) {
-            ArrayList<WifiEntry> listNoPassword = MyApplication.getWritableDatabase().getAllWifiEntries(false);
-            MyApplication.closeDatabase();
-            for (int i = 0; i < listNoPassword.size(); i++) {
-                if (!(listNoPassword.get(i).getPassword()).equals(MyApplication.NO_PASSWORD_TEXT)) {
-                    listNoPassword.remove(i);
-                    i--;
-                }
-            }
-
-            for (int i = 0; i < listNoPassword.size(); i++) {
-                mAdapter.addItem(mListWifi.size(), listNoPassword.get(i));
-            }
-
-            mRecyclerView.smoothScrollToPosition(mListWifi.size());
-
-            Snackbar.make(mRoot, listNoPassword.size() + " " + getString(R.string.snackbar_wifi_no_password_added), Snackbar.LENGTH_LONG)
-                    .setAction(R.string.snackbar_dismiss, v -> {
-                    })
-                    .show();
+            loadFromFile(false);
         } else {
             int removedEntries = 0;
 
@@ -555,10 +537,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
                 }
             }
 
-
             // reload the grid with new setting.
-
-
             mRecyclerView.smoothScrollToPosition(0);
 
             Snackbar.make(mRoot, removedEntries + " " + getString(R.string.snackbar_wifi_no_password_removed), Snackbar.LENGTH_LONG)
