@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mWifiListFragment = (WifiListFragment) getSupportFragmentManager().findFragmentByTag(WIFI_LIST_FRAGMENT_TAG);
         }
+	        mWifiListFragment.AppContext = getApplicationContext();
 
         getSupportFragmentManager().beginTransaction().replace
                 (R.id.content_frame, mWifiListFragment, WIFI_LIST_FRAGMENT_TAG).commit();

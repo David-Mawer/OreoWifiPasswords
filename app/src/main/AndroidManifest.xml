@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pithsoftware.wifipasswords">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <application
         android:name="com.pithsoftware.wifipasswords.extras.MyApplication"
         android:allowBackup="true"
@@ -13,7 +14,6 @@
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -29,8 +29,5 @@
         <activity
             android:name="com.pithsoftware.wifipasswords.activities.PasscodeActivity"
             android:label="@string/activity_title_passcode" />
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="06f213f31a8be7b286366ad575d0b66761422192" />
     </application>
 </manifest>

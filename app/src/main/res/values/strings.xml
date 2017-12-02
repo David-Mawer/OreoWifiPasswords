@@ -47,6 +47,7 @@
     <string name="snackbar_wifi_archive_multiple">Wifi Passwords are now hidden</string>
     <string name="snackbar_wifi_restore">Wifi Password no longer hidden</string>
     <string name="snackbar_wifi_exists">Wifi Password already exists!</string>
+    <string name="snackbar_wifi_entry_inserted">new Wifi Password</string>
     <string name="snackbar_wifi_entries_inserted">new Wifi Passwords</string>
     <string name="snackbar_wifi_entries_inserted_none">No new Wifi Passwords</string>
     <string name="snackbar_wifi_no_password_added">Wifi without passwords added</string>

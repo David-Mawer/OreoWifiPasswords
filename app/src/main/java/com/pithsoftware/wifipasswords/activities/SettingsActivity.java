@@ -17,8 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.pithsoftware.wifipasswords.R;
 import com.pithsoftware.wifipasswords.dialogs.AboutDialogFragment;
 import com.pithsoftware.wifipasswords.extras.AppCompatPreferenceActivity;
@@ -173,12 +171,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     if (preference instanceof EditTextPreference) {
 
                         preference.setSummary(stringValue);
-
-                        Answers.getInstance().logCustom(new CustomEvent("Manual Path")
-                                .putCustomAttribute("device", Build.DEVICE)
-                                .putCustomAttribute("model", Build.MODEL)
-                                .putCustomAttribute("manufacturer", Build.MANUFACTURER)
-                                .putCustomAttribute("path", stringValue));
 
                     } else if (preference instanceof ListPreference) {
 
