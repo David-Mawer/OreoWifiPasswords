@@ -4,6 +4,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'signing'
 
 android {
+    lintOptions {
+        checkReleaseBuilds false
+    }
     signingConfigs {
         release {
             keyAlias 'WifiPasswords'

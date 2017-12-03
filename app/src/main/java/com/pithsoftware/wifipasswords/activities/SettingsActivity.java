@@ -1,8 +1,6 @@
 package com.pithsoftware.wifipasswords.activities;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -15,7 +13,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.pithsoftware.wifipasswords.R;
 import com.pithsoftware.wifipasswords.dialogs.AboutDialogFragment;
