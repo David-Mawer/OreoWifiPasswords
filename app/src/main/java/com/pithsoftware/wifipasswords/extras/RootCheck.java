@@ -2,54 +2,36 @@ package com.pithsoftware.wifipasswords.extras;
 
 import android.util.Log;
 
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 
 
 public class RootCheck {
-    
+
     private static final String TAG = "ROOT";
 
     /***********************************************************************/
     //Root Check method
     //Credit: http://muzikant-android.blogspot.co.il/2011/02/how-to-get-root-access-and-execute.html
-
     /***********************************************************************/
     public static boolean canRunRootCommands() {
-        boolean retval = false;
+        boolean retval;
         Process suProcess;
 
         try {
-            suProcess = Runtime.getRuntime().exec("su");
-
-            DataOutputStream os = new DataOutputStream(suProcess.getOutputStream());
-            DataInputStream osRes = new DataInputStream(suProcess.getInputStream());
-
-            if (null != os && null != osRes) {
-                // Getting the id of the current user to check if this is root
-                os.writeBytes("id\n");
-                os.flush();
-
-                String currUid = osRes.readLine();
-                boolean exitSu = false;
-                if (null == currUid) {
-                    retval = false;
-                    exitSu = false;
-                    Log.d(TAG, "Can't get root access or denied by user");
-                } else if (true == currUid.contains("uid=0")) {
-                    retval = true;
-                    exitSu = true;
-                    Log.d(TAG, "Root access granted");
-                } else {
-                    retval = false;
-                    exitSu = true;
-                    Log.d(TAG, "Root access rejected: " + currUid);
-                }
-
-                if (exitSu) {
-                    os.writeBytes("exit\n");
-                    os.flush();
-                }
+            suProcess = Runtime.getRuntime().exec("su -c id");
+            BufferedReader suCheckReader = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
+            String currUid = suCheckReader.readLine();
+            if (null == currUid) {
+                retval = false;
+                Log.d(TAG, "Can't get root access or denied by user");
+            } else if (currUid.contains("uid=0")) {
+                retval = true;
+                Log.d(TAG, "Root access granted");
+            } else {
+                retval = false;
+                Log.d(TAG, "Root access rejected: " + currUid);
             }
         } catch (Exception e) {
             // Can't get root !

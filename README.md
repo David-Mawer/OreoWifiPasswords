@@ -32,13 +32,6 @@ Warning: sharing a wifi password with someone can compromise that wifi network s
 - <a href="https://github.com/PaoloRotolo/AppIntro">AppIntro</a> by Paolo Rotolo
 - <a href="https://github.com/traex/RippleEffect">RippleEffect</a>  by Robin Chutaux
 
-### Screenshots:
-
-![list](/list-new.png)
-***
-![list-dark](/list-dark.png)
-***
-
 ## Troubleshooting
 In case the app is unable to find the file containing your saved wifi passwords please google your device's path for the saved wifi passwords file.
 
@@ -53,8 +46,6 @@ the most commonly used paths by manufacturers which the app automatically tries 
 <a href="#OreoWifiPasswords">Back to Top</a>
 
 ## License
-
-Copyright 2015 Netanel Draiman
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
