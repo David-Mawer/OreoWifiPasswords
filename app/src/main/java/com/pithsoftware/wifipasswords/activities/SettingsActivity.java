@@ -194,6 +194,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 resetPathPref();
                 return true;
             });
+            // Allow the Default file path to be different for Oreo+
+            if (android.os.Build.VERSION.SDK_INT >= 26) { // Hard-CODED: Oreo
+                String currentValue = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                        .getString(getString(R.string.pref_path_manual_key), getString(R.string.pref_path_default));
+                if (currentValue.equals(getString(R.string.pref_path_default))) {
+                    resetPathPref();
+                }
+            }
 
             //set dependency on checkbox
             resetManualPath.setDependency(getString(R.string.pref_path_checkbox_key));
@@ -226,11 +234,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = settings.edit();
-            editor.putString(getString(R.string.pref_path_manual_key), getString(R.string.pref_path_default));
+            if (android.os.Build.VERSION.SDK_INT >= 26) { // Hard-CODED: Oreo
+                editor.putString(getString(R.string.pref_path_manual_key), getString(R.string.pref_path_default_oreo));
+            } else {
+                editor.putString(getString(R.string.pref_path_manual_key), getString(R.string.pref_path_default));
+            }
             editor.apply();
 
 
-            findPreference(getString(R.string.pref_path_manual_key)).setSummary(getString(R.string.pref_path_default));
+            if (android.os.Build.VERSION.SDK_INT >= 26) { // Hard-CODED: Oreo
+                findPreference(getString(R.string.pref_path_manual_key)).setSummary(getString(R.string.pref_path_default_oreo));
+            } else {
+                findPreference(getString(R.string.pref_path_manual_key)).setSummary(getString(R.string.pref_path_default));
+            }
 
             //Refresh Preference Screen
             setPreferenceScreen(null);

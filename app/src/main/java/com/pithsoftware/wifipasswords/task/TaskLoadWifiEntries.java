@@ -32,8 +32,16 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
     String mFileName;
     CustomAlertDialogListener mDialogListener;
     boolean mResetDB;
-    String[] mLocationList = {"/data/misc/wifi/wpa_supplicant.conf", "/data/wifi/bcm_supp.conf", "/data/misc/wifi/wpa.conf"};
-    String mOreoLocation = "/data/misc/wifi/WifiConfigStore.xml";
+    String[] mLocationList = {
+            "/data/misc/wifi/wpa_supplicant.conf",
+            "/data/wifi/bcm_supp.conf",
+            "/data/misc/wifi/wpa.conf"
+    };
+    String[] mOreoLocationList = {
+            "/data/misc/wifi/WifiConfigStore.xml",
+            "/data/wifi/WifiConfigStore.xml",
+            "/data/misc/wifi/WifiConfigStore.xml"
+    };
     boolean mManualLocation;
 
     final String SSID = "ssid";
@@ -72,7 +80,17 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
         ArrayList<WifiEntry> result;
 
         if (android.os.Build.VERSION.SDK_INT >= 26) { // Hard-CODED: Oreo
-            result = readOreoFile();
+            if (mManualLocation) {
+                result = readOreoFile(mPath + mFileName);
+            } else {
+                result = new ArrayList<>();
+                for (String oreoLocation : mOreoLocationList) {
+                    ArrayList<WifiEntry> currentFile = readOreoFile(oreoLocation);
+                    if ((currentFile != null) && (!currentFile.isEmpty())) {
+                        result.addAll(currentFile);
+                    }
+                }
+            }
         } else {
             result = readFile();
         }
@@ -232,10 +250,10 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
         }
     }
 
-    private ArrayList<WifiEntry> readOreoFile() {
+    private ArrayList<WifiEntry> readOreoFile(String configLocation) {
         ArrayList<WifiEntry> result = new ArrayList<>();
         try {
-            Process suOreoProcess = Runtime.getRuntime().exec("su -c /system/bin/cat " + mOreoLocation);
+            Process suOreoProcess = Runtime.getRuntime().exec("su -c /system/bin/cat " + configLocation);
             try {
                 suOreoProcess.waitFor();
             } catch (InterruptedException e) {
@@ -257,12 +275,12 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
             e.printStackTrace();
         } catch (XmlPullParserException e) {
             e.printStackTrace();
-        } finally {
-            if (!result.isEmpty()) {
-                return result;
-            } else {
-                return null;
-            }
+        }
+
+        if (!result.isEmpty()) {
+            return result;
+        } else {
+            return null;
         }
     }
 

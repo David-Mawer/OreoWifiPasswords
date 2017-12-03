@@ -308,8 +308,8 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
         switch (id) {
 
-            case R.id.action_add_from_file:
-                loadFromFile(false);
+            case R.id.action_add_to_list:
+                showAddWifiDialog();
                 return true;
             case R.id.action_sort_start:
                 sortMode(true);
@@ -462,8 +462,14 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
     }
 
     private boolean getPath() {
+        String defaultPath;
+        if (android.os.Build.VERSION.SDK_INT >= 26) { // Hard-CODED: Oreo
+            defaultPath = getString(R.string.pref_path_default_oreo);
+        } else {
+            defaultPath = getString(R.string.pref_path_default);
+        }
         mPath = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getString(getString(R.string.pref_path_manual_key), getString(R.string.pref_path_default));
+                .getString(getString(R.string.pref_path_manual_key), defaultPath);
         if (mPath == null || mPath.replace(" ", "").isEmpty()) {
             return false;
         }
@@ -777,8 +783,8 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
     private void setupFAB() {
 
-        mFAB.setImageResource(R.drawable.ic_action_add);
-        mFAB.setOnClickListener(v -> showAddWifiDialog());
+        mFAB.setImageResource(R.drawable.ic_action_reload);
+        mFAB.setOnClickListener(v -> loadFromFile(false));
 
     }
 

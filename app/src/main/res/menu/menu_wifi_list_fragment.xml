@@ -21,15 +21,15 @@
             app:showAsAction="ifRoom" />
 
         <item
-            android:id="@+id/action_add_from_file"
+            android:id="@+id/action_sort_start"
             android:orderInCategory="300"
-            android:title="@string/action_add_from_file"
+            android:title="@string/action_sort_start"
             app:showAsAction="never" />
 
         <item
-            android:id="@+id/action_sort_start"
+            android:id="@+id/action_add_to_list"
             android:orderInCategory="400"
-            android:title="@string/action_sort_start"
+            android:title="@string/action_add_to_list"
             app:showAsAction="never" />
 
 
