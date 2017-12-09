@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('RootShell-1.6-release.aar'))

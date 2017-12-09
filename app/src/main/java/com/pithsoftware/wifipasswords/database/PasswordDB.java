@@ -84,39 +84,40 @@ public class PasswordDB {
         String[] columns = new String[]{PasswordHelper.COLUMN_UID, PasswordHelper.COLUMN_TITLE};
         String selection = PasswordHelper.COLUMN_TITLE + " = ?";
 
+        if ((listWifi != null) && (listWifi.size() > 0)) {
+            for (int i = 0; i < listWifi.size(); i++) {
+                WifiEntry current = listWifi.get(i);
 
-        for (int i = 0; i < listWifi.size(); i++) {
-            WifiEntry current = listWifi.get(i);
+                values.clear();
+                values.put(PasswordHelper.COLUMN_TITLE, current.getTitle());
+                values.put(PasswordHelper.COLUMN_PASSWORD, current.getPassword());
 
-            values.clear();
-            values.put(PasswordHelper.COLUMN_TITLE, current.getTitle());
-            values.put(PasswordHelper.COLUMN_PASSWORD, current.getPassword());
+                if (updateTags) {
+                    values.put(PasswordHelper.COLUMN_TAG, current.getTag());
 
-            if (updateTags) {
-                values.put(PasswordHelper.COLUMN_TAG, current.getTag());
-
-            }
-
-            if (!archive) {
-                //Main Table - Check for duplicates
-                String[] selectionArgs = new String[]{current.getTitle()};
-                Cursor cursor = mDatabase.query(table, columns, selection, selectionArgs, null, null, null);
-
-                if (cursor.moveToFirst()) {
-
-                    int id = cursor.getInt(cursor.getColumnIndex(PasswordHelper.COLUMN_UID));
-                    mDatabase.update(table, values, PasswordHelper.COLUMN_UID + " = ?", new String[]{id + ""});
-
-                } else {
-
-                    mDatabase.insert(table, null, values);
-                    mNewEntriesOnLastInsert++;
                 }
 
-                cursor.close();
+                if (!archive) {
+                    //Main Table - Check for duplicates
+                    String[] selectionArgs = new String[]{current.getTitle()};
+                    Cursor cursor = mDatabase.query(table, columns, selection, selectionArgs, null, null, null);
 
-            } else {
-                mDatabase.insert(table, null, values);
+                    if (cursor.moveToFirst()) {
+
+                        int id = cursor.getInt(cursor.getColumnIndex(PasswordHelper.COLUMN_UID));
+                        mDatabase.update(table, values, PasswordHelper.COLUMN_UID + " = ?", new String[]{id + ""});
+
+                    } else {
+
+                        mDatabase.insert(table, null, values);
+                        mNewEntriesOnLastInsert++;
+                    }
+
+                    cursor.close();
+
+                } else {
+                    mDatabase.insert(table, null, values);
+                }
             }
         }
 

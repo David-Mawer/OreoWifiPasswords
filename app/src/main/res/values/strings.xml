@@ -224,6 +224,7 @@
     <string name="dialog_about_library_materialprogressbar"><a href="https://github.com/DreaminginCodeZH/MaterialProgressBar">MaterialProgressBar</a> by Zhang Hai</string>
     <string name="dialog_about_library_appintro"><a href="https://github.com/PaoloRotolo/AppIntro">AppIntro</a> by Paolo Rotolo</string>
     <string name="dialog_about_library_rippleeffect"><a href="https://github.com/traex/RippleEffect">RippleEffect</a> by Robin Chutaux</string>
+    <string name="dialog_about_library_rootshell"><a href="https://github.com/Stericson/RootShell">RootShell</a> by Stephen Ericson</string>
     <string name="dialog_about_help_title"><u>Get Help:</u></string>
     <string name="dialog_about_help_intro"><u>Show Intro</u></string>
     <string name="dialog_about_help_readme"><a href="https://github.com/Nexxado/WifiPasswords/blob/master/README.md">Readme</a></string>

@@ -2,8 +2,9 @@ package com.pithsoftware.wifipasswords.extras;
 
 import android.util.Log;
 
+import com.stericson.RootShell.RootShell;
+
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 
 
@@ -17,21 +18,17 @@ public class RootCheck {
     /***********************************************************************/
     public static boolean canRunRootCommands() {
         boolean retval;
-        Process suProcess;
 
         try {
-            suProcess = Runtime.getRuntime().exec("su -c id");
-            BufferedReader suCheckReader = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
-            String currUid = suCheckReader.readLine();
-            if (null == currUid) {
+            if (!RootShell.isRootAvailable()) {
                 retval = false;
                 Log.d(TAG, "Can't get root access or denied by user");
-            } else if (currUid.contains("uid=0")) {
+            } else if (RootShell.isAccessGiven()) {
                 retval = true;
                 Log.d(TAG, "Root access granted");
             } else {
                 retval = false;
-                Log.d(TAG, "Root access rejected: " + currUid);
+                Log.d(TAG, "Root access rejected");
             }
         } catch (Exception e) {
             // Can't get root !
