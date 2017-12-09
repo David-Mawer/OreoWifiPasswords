@@ -35,11 +35,16 @@ public class InputDialogFragment extends DialogFragment {
     public static final int INPUT_ENTRY = 0;
     public static final int INPUT_TAG = 1;
 
-    @Bind(R.id.input_title) EditText mTitle;
-    @Bind(R.id.input_password) EditText mPassword;
-    @Bind(R.id.input_confirm) Button mConfirm;
-    @Bind(R.id.input_cancel) Button mCancel;
-    @Bind(R.id.dialog_add_container) LinearLayout mRoot;
+    @Bind(R.id.input_title)
+    EditText mTitle;
+    @Bind(R.id.input_password)
+    EditText mPassword;
+    @Bind(R.id.input_confirm)
+    Button mConfirm;
+    @Bind(R.id.input_cancel)
+    Button mCancel;
+    @Bind(R.id.dialog_add_container)
+    LinearLayout mRoot;
 
 
     public static InputDialogFragment getInstance(int type, Bundle listWifiBundle) {

@@ -27,7 +27,7 @@
     <style name="AppTheme.Dark.Base" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/Dark.colorPrimary</item>
         <item name="colorPrimaryDark">@color/Dark.colorPrimaryDark</item>
-        <item name="colorAccent">@color/Dark.colorAccent</item>
+        <item name="colorAccent">@color/colorPrimaryDark</item>
         <item name="colorControlHighlight">@color/colorHighlight</item>
         <item name="android:colorBackground">@color/Dark.colorBackground</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat</item>
@@ -50,7 +50,13 @@
 
     <style name="AlertDialogTheme.Dark" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:windowAnimationStyle">@style/AlertDialogTheme.Animation</item>
-    </style>
+        <item name="android:textColorPrimary">@android:color/primary_text_dark</item>
+        <item name="android:colorBackground">@android:color/darker_gray</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/Dark.colorPrimary</item>
+        <item name="android:colorForeground">@color/colorPrimaryDark</item>
+        <item name="android:windowBackground">@android:color/background_dark</item>
+1    </style>
 
     <style name="AlertDialogTheme.Animation">
         <item name="android:windowEnterAnimation">@anim/shrink_and_fold_in</item>
@@ -101,6 +107,12 @@
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowCloseOnTouchOutside">true</item>
         <item name="android:windowAnimationStyle">@style/InputDialogTheme.Animation</item>
+        <item name="android:textColorPrimary">@android:color/primary_text_dark</item>
+        <item name="android:colorBackground">@android:color/background_dark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/Dark.colorPrimary</item>
+        <item name="android:colorForeground">@color/colorPrimaryDark</item>
+        <item name="android:windowBackground">@android:color/background_dark</item>
 
     </style>
 

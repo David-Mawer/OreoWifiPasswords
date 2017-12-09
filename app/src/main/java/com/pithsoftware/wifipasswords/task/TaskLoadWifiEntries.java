@@ -44,6 +44,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
     };
     boolean mManualLocation;
 
+    final String BSSID = "bssid";
     final String SSID = "ssid";
     final String WPA_PSK = "psk";
     final String WEP_PSK = "wep_key0";
@@ -134,9 +135,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
 
         //Show "No Root Access" error
         if (!mRootAccess) {
-
             if (mDialogListener != null) {
-
                 mDialogListener.showRootErrorDialog();
             }
         }
@@ -356,7 +355,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                             processingEntry = false;
                         } else {
                             // still processing the current entry; check for valid data.
-                            if (line.contains(SSID)) {
+                            if (line.contains(SSID) && !line.contains(BSSID)) {
                                 title = line.replace(SSID, "").replace("=", "").replace("\"", "").replace(" ", "");
                             }
                             if (line.contains(WPA_PSK)) {
