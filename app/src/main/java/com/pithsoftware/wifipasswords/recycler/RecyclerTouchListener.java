@@ -34,7 +34,6 @@ public class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
 
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
-
                 return true;
             }
 

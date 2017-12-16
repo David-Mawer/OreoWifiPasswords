@@ -90,7 +90,7 @@ public class PasswordDB {
 
                 values.clear();
                 values.put(PasswordHelper.COLUMN_TITLE, current.getTitle());
-                values.put(PasswordHelper.COLUMN_PASSWORD, current.getPassword());
+                values.put(PasswordHelper.COLUMN_PASSWORD, current.getPassword(true));
 
                 if (updateTags) {
                     values.put(PasswordHelper.COLUMN_TAG, current.getTag());
@@ -134,7 +134,7 @@ public class PasswordDB {
 
             values.clear();
             values.put(PasswordHelper.COLUMN_TITLE, current.getTitle());
-            values.put(PasswordHelper.COLUMN_PASSWORD, current.getPassword());
+            values.put(PasswordHelper.COLUMN_PASSWORD, current.getPassword(true));
             values.put(PasswordHelper.COLUMN_TAG, current.getTag());
 
             mDatabase.insert(PasswordHelper.TABLE_DELETED, null, values);
@@ -182,7 +182,7 @@ public class PasswordDB {
                 boolean showNoPassword = PreferenceManager.getDefaultSharedPreferences(mHelper.mContext)
                         .getBoolean(mHelper.mContext.getString(R.string.pref_show_no_password_key), true);
 
-                if (!wifiEntry.getPassword().equals(MyApplication.NO_PASSWORD_TEXT) || showNoPassword) {
+                if (!wifiEntry.getPassword(true).equals(MyApplication.NO_PASSWORD_TEXT) || showNoPassword) {
                     listWifi.add(wifiEntry);
                 }
 

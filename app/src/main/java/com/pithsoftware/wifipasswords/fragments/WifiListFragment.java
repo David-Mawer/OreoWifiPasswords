@@ -123,7 +123,6 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View layout = inflater.inflate(R.layout.fragment_wifi_list, container, false);
         setHasOptionsMenu(true);
         setRetainInstance(true);
@@ -438,7 +437,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
             WifiEntry current = listWifi.get(i);
             textToShare
                     .append("Wifi Name: ").append(current.getTitle()).append("\n")
-                    .append("Password: ").append(current.getPassword()).append("\n\n");
+                    .append("Password: ").append(current.getPassword(true)).append("\n\n");
         }
 
         Intent sendIntent = new Intent();
@@ -537,7 +536,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
             for (int i = mListWifi.size() - 1; i >= 0; i--) {
 
-                if (mListWifi.get(i).getPassword().equals(MyApplication.NO_PASSWORD_TEXT)) {
+                if (mListWifi.get(i).getPassword(true).equals(MyApplication.NO_PASSWORD_TEXT)) {
                     mAdapter.removeItem(i);
                     removedEntries++;
                 }
@@ -592,11 +591,14 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
         mRecyclerTouchListener = new RecyclerTouchListener(getActivity(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-
-                //while in ActionMode - regular clicks will also select items
+                // while in ActionMode - regular clicks will also select items
                 if (mActionModeEnabled) {
                     mAdapter.toggleSelection(position);
                     mRecyclerView.smoothScrollToPosition(position);
+                } else {
+                    // Normal mode - regular click copies password to clipboard.
+                    String password = mAdapter.getItemPassword(position);
+                    copyToClipboard(COPIED_WIFI_ENTRY, password, password + ' ' + getString(R.string.snackbar_wifi_copy));
                 }
             }
 
@@ -623,7 +625,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
                 WifiEntry entry = mListWifi.get(position);
 
                 String textToCopy = "Wifi Name: " + entry.getTitle() + "\n"
-                        + "Password: " + entry.getPassword() + "\n";
+                        + "Password: " + entry.getPassword(true) + "\n";
 
                 copyToClipboard(COPIED_WIFI_ENTRY, textToCopy, getString(R.string.snackbar_wifi_copy));
             }
@@ -708,7 +710,7 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
 
                         for (WifiEntry entry : selectedEntries) {
                             textToCopy += "Wifi Name: " + entry.getTitle() + "\n"
-                                    + "Password: " + entry.getPassword() + "\n\n";
+                                    + "Password: " + entry.getPassword(true) + "\n\n";
                         }
 
                         copyToClipboard(COPIED_WIFI_ENTRY, textToCopy, getString(R.string.snackbar_wifi_copy));

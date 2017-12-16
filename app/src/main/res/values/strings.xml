@@ -38,6 +38,7 @@
     <!-- Snackbar & Toasts -->
     <!--*******************-->
     <string name="snackbar_wifi_copy">Wifi info Copied to Clipboard</string>
+    <string name="snackbar_copy">Copied to Clipboard</string>
     <string name="snackbar_dismiss">Dismiss</string>
     <string name="snackbar_undo">Undo</string>
     <string name="snackbar_load_from_file">Updating list</string>

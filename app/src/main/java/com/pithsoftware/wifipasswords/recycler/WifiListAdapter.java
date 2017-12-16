@@ -65,17 +65,14 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
 
         holder.mTitle.setText(currentEntry.getTitle());
         holder.mCurrentInd.setChecked(currentEntry.getConnectedInd());
-        holder.mPassword.setText(currentEntry.getPassword());
+        holder.mPassword.setText(currentEntry.getPassword(false));
         holder.mTagText.setText(currentEntry.getTag());
 
 
         //Selected Background
         if (mSelectedItems.get(position, false)) {
-
             holder.mBackground.setBackgroundResource(R.color.colorHighlight);
-
         } else {
-
             if (PreferenceManager.getDefaultSharedPreferences(mContext)
                     .getBoolean(mContext.getString(R.string.pref_dark_theme_key), false)) {
                 holder.mBackground.setBackground(ResourcesCompat.getDrawable(mContext.getResources(),
@@ -83,7 +80,6 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
             } else {
                 holder.mBackground.setBackgroundResource(R.drawable.highlight_selected);
             }
-
         }
 
         //Drag Icon
@@ -95,10 +91,8 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
             return false;
         });
 
-
         //Tag & Drag Handler Visibility
         toggleTagAndDrag(holder);
-
     }
 
 
@@ -114,6 +108,15 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
         // Clean up the list
         validateAllEntries();
         notifyDataSetChanged();
+    }
+
+    public String getItemPassword(int position) {
+        WifiEntry thisEntry = mListWifi.get(position);
+
+        if (thisEntry != null) {
+            return thisEntry.getPassword(true);
+        }
+        return "";
     }
 
 
@@ -164,6 +167,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
         }
         return items;
     }
+
     // Remove the entry if it's got a blank password, and "open networks" not checked.
     // tick the entry if it's the current connection.
     private int validateAllEntries() {
@@ -172,7 +176,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
         try {
             for (int i = mListWifi.size() - 1; i >= 0; i--) {
                 WifiEntry thisEntry = mListWifi.get(i);
-                if (!mShowPublic && thisEntry.getPassword().equals(MyApplication.NO_PASSWORD_TEXT)) {
+                if (!mShowPublic && thisEntry.getPassword(true).equals(MyApplication.NO_PASSWORD_TEXT)) {
                     removeItem(i);
                     result++;
                 } else {

@@ -3,6 +3,8 @@ package com.pithsoftware.wifipasswords.pojo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
+
 
 public class WifiEntry implements Parcelable {
 
@@ -52,8 +54,14 @@ public class WifiEntry implements Parcelable {
         this.title = title;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPassword(boolean showAll) {
+        if (showAll || password.length() <= 3) {
+            return password;
+        } else {
+            char[] fill = new char[password.length()-3];
+            Arrays.fill(fill, '*');
+            return  password.substring(0, 3) +  new String(fill);
+        }
     }
 
     public void setPassword(String password) {

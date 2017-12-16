@@ -227,11 +227,17 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
             if (name.equals("SSID") && !tagName.equalsIgnoreCase("null")) {
                 result.setTitle(readTag(parser, tagName));
             } else if (name.equals("PreSharedKey") && !tagName.equalsIgnoreCase("null")) {
-                result.setPassword(readTag(parser, tagName));
-//                result.setTyp(WifiObject.TYP_WPA);
+                String newPwd = readTag(parser, tagName);
+                if (newPwd.length() > 0) {
+                    result.setPassword(newPwd);
+//                  result.setTyp(WifiObject.TYP_WPA);
+                }
             } else if (name.equals("WEPKeys") && !tagName.equalsIgnoreCase("null")) {
-                result.setPassword(readTag(parser, tagName));
-//                result.setTyp(WifiObject.TYP_WEP);
+                String newPwd = readTag(parser, tagName);
+                if (newPwd.length() > 0) {
+                    result.setPassword(readTag(parser, tagName));
+//                  result.setTyp(WifiObject.TYP_WEP);
+                }
             } else {
                 skip(parser);
             }
@@ -355,12 +361,12 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                             processingEntry = false;
                         } else {
                             // still processing the current entry; check for valid data.
-                            if (line.contains(SSID) && !line.contains(BSSID)) {
+                            if ((line.contains(SSID + "=") || line.contains(SSID + " =")) && !line.contains(BSSID)) {
                                 title = line.replace(SSID, "").replace("=", "").replace("\"", "").replace(" ", "");
                             }
-                            if (line.contains(WPA_PSK)) {
+                            if (line.contains(WPA_PSK + "=") || line.contains(WPA_PSK + " =")) {
                                 password = line.replace(WPA_PSK, "").replace("=", "").replace("\"", "").replace(" ", "");
-                            } else if (line.contains(WEP_PSK)) {
+                            } else if (line.contains(WEP_PSK + "=") || line.contains(WEP_PSK + " =")) {
                                 password = line.replace(WEP_PSK, "").replace("=", "").replace("\"", "").replace(" ", "");
                             }
                         }
