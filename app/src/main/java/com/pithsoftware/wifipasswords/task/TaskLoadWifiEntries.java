@@ -2,6 +2,7 @@ package com.pithsoftware.wifipasswords.task;
 
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.Xml;
 
 import com.pithsoftware.wifipasswords.database.PasswordDB;
@@ -173,23 +174,28 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
         parser.require(XmlPullParser.START_TAG, null, "NetworkList");
         boolean doLoop = true;
         while (doLoop) {
-            parser.next();
-            String tagName = parser.getName();
-            if (tagName == null) {
-                tagName = "";
-            }
-            doLoop = (!tagName.equalsIgnoreCase("NetworkList"));
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-
-            if (tagName.equals("Network")) {
-                WifiEntry newWifi = readNetworkEntry(parser);
-                if (newWifi.getTitle().length() != 0) {
-                    result.add(newWifi);
+            try {
+                parser.next();
+                String tagName = parser.getName();
+                if (tagName == null) {
+                    tagName = "";
                 }
-            } else {
-                skip(parser);
+                doLoop = (!tagName.equalsIgnoreCase("NetworkList"));
+                if (parser.getEventType() != XmlPullParser.START_TAG) {
+                    continue;
+                }
+
+                if (tagName.equals("Network")) {
+                    WifiEntry newWifi = readNetworkEntry(parser);
+                    if (newWifi.getTitle().length() != 0) {
+                        result.add(newWifi);
+                    }
+                } else {
+                    skip(parser);
+                }
+            } catch (Exception e) {
+                Log.e("LoadData.NetworkList", e.getMessage());
+                doLoop = false;
             }
         }
         return result;
@@ -218,29 +224,52 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
 
     // Parses a "WifiConfiguration" entry
     private WifiEntry readWiFiConfig(XmlPullParser parser, WifiEntry result) throws XmlPullParserException, IOException {
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-            String tagName = parser.getName();
-            String name = parser.getAttributeValue(null, "name");
-            if (name.equals("SSID") && !tagName.equalsIgnoreCase("null")) {
-                result.setTitle(readTag(parser, tagName));
-            } else if (name.equals("PreSharedKey") && !tagName.equalsIgnoreCase("null")) {
-                String newPwd = readTag(parser, tagName);
-                if (newPwd.length() > 0) {
-                    result.setPassword(newPwd);
+        try {
+            while (parser.next() != XmlPullParser.END_TAG) {
+                if (parser.getEventType() != XmlPullParser.START_TAG) {
+                    continue;
+                }
+                String tagName = parser.getName();
+                String name = parser.getAttributeValue(null, "name");
+                if (name.equals("SSID") && !tagName.equalsIgnoreCase("null")) {
+                    result.setTitle(readTag(parser, tagName));
+                } else if (name.equals("PreSharedKey") && !tagName.equalsIgnoreCase("null")) {
+                    String newPwd = readTag(parser, tagName);
+                    if (newPwd.length() > 0) {
+                        result.setPassword(newPwd);
 //                  result.setTyp(WifiObject.TYP_WPA);
-                }
-            } else if (name.equals("WEPKeys") && !tagName.equalsIgnoreCase("null")) {
-                String newPwd = readTag(parser, tagName);
-                if (newPwd.length() > 0) {
-                    result.setPassword(readTag(parser, tagName));
+                    }
+                } else if (name.equals("WEPKeys") && !tagName.equalsIgnoreCase("null")) {
 //                  result.setTyp(WifiObject.TYP_WEP);
+                    if (tagName.equalsIgnoreCase("string-array")) {
+                        try {
+                            int numQty = Integer.parseInt(parser.getAttributeValue(null, "num"));
+                            int loopQty = 0;
+                            while ((parser.next() != XmlPullParser.END_DOCUMENT) && (loopQty < numQty)) {
+                                String innerTagName = parser.getName();
+                                if ((innerTagName != null) && innerTagName.equalsIgnoreCase("item")) {
+                                    loopQty ++;
+                                    String newPwd = parser.getAttributeValue(null, "value");
+                                    if (newPwd.length() > 0) {
+                                        result.setPassword(newPwd);
+                                    }
+                                }
+                            }
+                        } catch (Exception error) {
+                            parser.getName();
+                        }
+                    } else {
+                        String newPwd = readTag(parser, tagName);
+                        if (newPwd.length() > 0) {
+                            result.setPassword(readTag(parser, tagName));
+                        }
+                    }
+                } else {
+                    skip(parser);
                 }
-            } else {
-                skip(parser);
             }
+        } catch (Exception error) {
+            Log.e("LoadData.readWiFiConfig", error.getMessage() + "\n\nParser: " + parser.getText());
         }
         return result;
     }
@@ -312,11 +341,7 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
             e.printStackTrace();
         }
 
-        if (!result.isEmpty()) {
-            return result;
-        } else {
-            return null;
-        }
+        return result;
     }
 
     /****************** Oreo Helper Methods: END ******************/
@@ -361,13 +386,15 @@ public class TaskLoadWifiEntries extends AsyncTask<String, Void, ArrayList<WifiE
                             processingEntry = false;
                         } else {
                             // still processing the current entry; check for valid data.
-                            if ((line.contains(SSID + "=") || line.contains(SSID + " =")) && !line.contains(BSSID)) {
+                            if (line.contains(SSID) && !line.contains(BSSID)) {
                                 title = line.replace(SSID, "").replace("=", "").replace("\"", "").replace(" ", "");
                             }
-                            if (line.contains(WPA_PSK + "=") || line.contains(WPA_PSK + " =")) {
-                                password = line.replace(WPA_PSK, "").replace("=", "").replace("\"", "").replace(" ", "");
-                            } else if (line.contains(WEP_PSK + "=") || line.contains(WEP_PSK + " =")) {
-                                password = line.replace(WEP_PSK, "").replace("=", "").replace("\"", "").replace(" ", "");
+                            if (password.length() == 0) {
+                                if (line.contains(WPA_PSK)) {
+                                    password = line.replace(WPA_PSK, "").replace("=", "").replace("\"", "").replace(" ", "");
+                                } else if (line.contains(WEP_PSK)) {
+                                    password = line.replace(WEP_PSK, "").replace("=", "").replace("\"", "").replace(" ", "");
+                                }
                             }
                         }
                     } else {

@@ -4,10 +4,6 @@ import android.util.Log;
 
 import com.stericson.RootShell.RootShell;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
-
 public class RootCheck {
 
     private static final String TAG = "ROOT";
