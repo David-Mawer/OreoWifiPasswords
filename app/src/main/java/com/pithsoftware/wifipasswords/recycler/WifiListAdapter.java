@@ -41,7 +41,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
     private Context mContext;
     private SparseBooleanArray mSelectedItems = new SparseBooleanArray();
     private boolean mShowPublic = false;
-
+    private static int mShowPassPosition = -1;
 
     public WifiListAdapter(Context context, ItemDragListener dragListener) {
         layoutInflater = LayoutInflater.from(context);
@@ -65,7 +65,10 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
 
         holder.mTitle.setText(currentEntry.getTitle());
         holder.mCurrentInd.setChecked(currentEntry.getConnectedInd());
-        holder.mPassword.setText(currentEntry.getPassword(false));
+        holder.mPassword.setText(currentEntry.getPassword(!MyApplication.sHidePwd || (mShowPassPosition == position)));
+        if (mShowPassPosition == position) {
+            mShowPassPosition = -1;
+        }
         holder.mTagText.setText(currentEntry.getTag());
 
 
@@ -117,6 +120,15 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.MyView
             return thisEntry.getPassword(true);
         }
         return "";
+    }
+
+    public void showItemPassword(int position) {
+        WifiEntry thisEntry = mListWifi.get(position);
+
+        if (thisEntry != null) {
+            mShowPassPosition = position;
+            notifyItemRangeChanged(position, 1);
+        }
     }
 
 

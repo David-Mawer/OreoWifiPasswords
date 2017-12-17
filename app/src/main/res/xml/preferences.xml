@@ -37,6 +37,13 @@
 
         <CheckBoxPreference
             android:defaultValue="true"
+            android:key="@string/pref_hide_pass_key"
+            android:order="290"
+            android:summary="@string/pref_hide_pass_summary"
+            android:title="@string/pref_hide_pass_decrip" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="@string/pref_share_warning_key"
             android:order="300"
             android:summary="@string/pref_share_warning_summary"

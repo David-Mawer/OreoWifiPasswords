@@ -221,6 +221,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 return true;
             });
 
+            findPreference(getString(R.string.pref_hide_pass_key)).setOnPreferenceClickListener(preference -> {
+                MyApplication.hidePass((CheckBoxPreference) preference);
+                getActivity().setResult(RequestCodes.HIDE_PASS);
+                getActivity().finish();
+                return true;
+            });
+
             //Summary to Value
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_path_manual_key)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_auto_update_key)));

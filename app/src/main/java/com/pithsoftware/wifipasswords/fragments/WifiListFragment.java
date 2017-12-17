@@ -1,6 +1,7 @@
 package com.pithsoftware.wifipasswords.fragments;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -598,6 +599,9 @@ public class WifiListFragment extends Fragment implements WifiListLoadedListener
                 } else {
                     // Normal mode - regular click copies password to clipboard.
                     String password = mAdapter.getItemPassword(position);
+                    if (MyApplication.sHidePwd) {
+                        mAdapter.showItemPassword(position);
+                    }
                     copyToClipboard(COPIED_WIFI_ENTRY, password, password + ' ' + getString(R.string.snackbar_wifi_copy));
                 }
             }

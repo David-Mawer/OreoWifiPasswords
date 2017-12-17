@@ -55,12 +55,12 @@ public class WifiEntry implements Parcelable {
     }
 
     public String getPassword(boolean showAll) {
-        if (showAll || password.length() <= 3) {
+        if (showAll) {
             return password;
         } else {
-            char[] fill = new char[password.length()-3];
+            char[] fill = new char[password.length()];
             Arrays.fill(fill, '*');
-            return  password.substring(0, 3) +  new String(fill);
+            return  new String(fill);
         }
     }
 

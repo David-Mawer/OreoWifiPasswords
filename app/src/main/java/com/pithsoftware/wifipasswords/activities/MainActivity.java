@@ -178,15 +178,19 @@ public class MainActivity extends AppCompatActivity {
 
                     mWifiListFragment.toggleNoPassword();
 
-                } else if (resultCode == RequestCodes.DARK_THEME) {
-                    finish();
-                    final Intent intent = getIntent();
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                } else if ((resultCode == RequestCodes.DARK_THEME) || (resultCode == RequestCodes.HIDE_PASS)) {
+                    reloadList();
                 }
                 break;
 
         }
+    }
+
+    private void reloadList() {
+        finish();
+        final Intent intent = getIntent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
 }

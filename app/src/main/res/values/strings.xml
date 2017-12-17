@@ -107,6 +107,10 @@
     <string name="pref_default_title">Reset Data</string>
     <string name="pref_default_summary">Delete all the data and reload it from your device</string>
 
+    <string name="pref_hide_pass_key" translateable="false">pref_hide_pass</string>
+    <string name="pref_hide_pass_decrip">Hide password until tap</string>
+    <string name="pref_hide_pass_summary">Hide the passwords until you tap on the row.</string>
+
     <string name="pref_share_warning_key" translateable="false">pref_share_warning</string>
     <string name="pref_share_warning_title_show">Show Share Warning</string>
     <string name="pref_share_warning_summary">a warning before sharing WiFi passwords</string>

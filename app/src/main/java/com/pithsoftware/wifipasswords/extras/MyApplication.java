@@ -26,6 +26,7 @@ public class MyApplication extends Application {
 
     public static final String NO_PASSWORD_TEXT = "no password";
 
+    public static boolean sHidePwd;
     public static boolean sIsDark;
     public static String sMyUUID;
     public static boolean sShouldAutoUpdateList;
@@ -50,6 +51,7 @@ public class MyApplication extends Application {
         sShouldAutoUpdateList = true;
 
         sIsDark = sharedPreferences.getBoolean(getString(R.string.pref_dark_theme_key), false);
+        sHidePwd = sharedPreferences.getBoolean(getString(R.string.pref_hide_pass_key), true);
     }
 
 
@@ -78,6 +80,10 @@ public class MyApplication extends Application {
 
     public static void darkTheme(CheckBoxPreference preference) {
         sIsDark = preference.isChecked();
+    }
+
+    public static void hidePass(CheckBoxPreference preference) {
+        sHidePwd = preference.isChecked();
     }
 
     private void generateUUID() {
