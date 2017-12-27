@@ -94,7 +94,6 @@ public class PasswordDB {
 
                 if (updateTags) {
                     values.put(PasswordHelper.COLUMN_TAG, current.getTag());
-
                 }
 
                 if (!archive) {
@@ -103,12 +102,13 @@ public class PasswordDB {
                     Cursor cursor = mDatabase.query(table, columns, selection, selectionArgs, null, null, null);
 
                     if (cursor.moveToFirst()) {
-
-                        int id = cursor.getInt(cursor.getColumnIndex(PasswordHelper.COLUMN_UID));
-                        mDatabase.update(table, values, PasswordHelper.COLUMN_UID + " = ?", new String[]{id + ""});
-
+                        String thisPassword = current.getPassword(true);
+                        if (!thisPassword.equalsIgnoreCase("")
+                                && !thisPassword.equals(MyApplication.NO_PASSWORD_TEXT)) {
+                            int id = cursor.getInt(cursor.getColumnIndex(PasswordHelper.COLUMN_UID));
+                            mDatabase.update(table, values, PasswordHelper.COLUMN_UID + " = ?", new String[]{id + ""});
+                        }
                     } else {
-
                         mDatabase.insert(table, null, values);
                         mNewEntriesOnLastInsert++;
                     }
